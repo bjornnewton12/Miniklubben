@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Minigolf.Domain.Models;
-using MinigolfApi.Models;
 
-namespace MinigolfApi.Data;
+namespace Minigolf.Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
