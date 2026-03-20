@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Minigolf.Domain.Models;
 using MinigolfApi.Models;
 
 namespace MinigolfApi.Data;

@@ -1,4 +1,6 @@
-namespace MinigolfApi.Models;
+using MinigolfApi.Models;
+
+namespace Minigolf.Domain.Models;
 
 public class User
 {

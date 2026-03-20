@@ -17,4 +17,11 @@
     <ProjectReference Include="..\Minigolf.Infrastructure\Minigolf.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+    <Folder Include="Endpoints\" />
+    <Folder Include="http\" />
+    <Folder Include="Identity\" />
+  </ItemGroup>
+
 </Project>

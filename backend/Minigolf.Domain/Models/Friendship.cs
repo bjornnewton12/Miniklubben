@@ -1,3 +1,5 @@
+using Minigolf.Domain.Models;
+
 namespace MinigolfApi.Models;
 
 public class Friendship
