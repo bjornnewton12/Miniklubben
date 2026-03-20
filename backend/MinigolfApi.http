@@ -1,0 +1,6 @@
+@MinigolfApi_HostAddress = http://localhost:5098
+
+GET {{MinigolfApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
