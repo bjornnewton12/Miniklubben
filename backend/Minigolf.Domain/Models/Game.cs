@@ -1,6 +1,6 @@
 using Minigolf.Domain.Models;
 
-namespace MinigolfApi.Models;
+namespace Minigolf.Domain.Models;
 
 public class Game
 {
