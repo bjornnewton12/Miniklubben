@@ -4,6 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using Minigolf.Application.Interfaces;
 using Minigolf.Application.UseCases.Auth.LoginUser;
 using Minigolf.Application.UseCases.Auth.RegisterUser;
+using Minigolf.Application.UseCases.Courses.GetCourses;
+using Minigolf.Application.UseCases.Courses.GetCoursesById;
 using Minigolf.Application.UseCases.Friends.AcceptFriendRequest;
 using Minigolf.Application.UseCases.Friends.GetFriends;
 using Minigolf.Application.UseCases.Friends.RemoveFriend;
@@ -24,17 +26,23 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
       options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<RegisterUserHandler>();
 builder.Services.AddScoped<LoginUserHandler>();
 builder.Services.AddScoped<GetCurrentUserHandler>();
 builder.Services.AddScoped<GetUserByUsernameHandler>();
+
 builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 builder.Services.AddScoped<GetFriendsHandler>();
 builder.Services.AddScoped<SendFriendRequestHandler>();
 builder.Services.AddScoped<AcceptFriendRequestHandler>();
 builder.Services.AddScoped<RemoveFriendHandler>();
+
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<GetCoursesHandler>();
+builder.Services.AddScoped<GetCoursesByIdHandler>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       .AddJwtBearer(options =>

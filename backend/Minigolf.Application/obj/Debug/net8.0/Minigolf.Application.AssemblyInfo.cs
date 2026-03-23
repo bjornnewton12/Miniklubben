@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Minigolf.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe8debac34ccc2d2366eda07448bae78ea723a1b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+622f3aeacef30ef383563d4377a5f06eb2120296")]
 [assembly: System.Reflection.AssemblyProductAttribute("Minigolf.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Minigolf.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
