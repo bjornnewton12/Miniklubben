@@ -267,7 +267,7 @@
 - [x] 6. Backend: AuthController (POST /api/auth/register, POST /api/auth/login)
 - [x] 7. Supabase: create project + provision PostgreSQL + run EF Core migrations
 - [x] 8. Backend: UsersController (GET /api/users/me, GET /api/users/{username})
-- [ ] 9. Backend: FriendsController + friend request use cases
+- [x] 9. Backend: FriendsController + friend request use cases
 - [ ] 10. Backend: CoursesController + seed data
 - [ ] 11. Backend: GamesController (create, scores, results)
 - [ ] 12. Frontend: Vite scaffold + routing + axios + auth store

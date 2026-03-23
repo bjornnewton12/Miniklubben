@@ -4,6 +4,10 @@ using Microsoft.IdentityModel.Tokens;
 using Minigolf.Application.Interfaces;
 using Minigolf.Application.UseCases.Auth.LoginUser;
 using Minigolf.Application.UseCases.Auth.RegisterUser;
+using Minigolf.Application.UseCases.Friends.AcceptFriendRequest;
+using Minigolf.Application.UseCases.Friends.GetFriends;
+using Minigolf.Application.UseCases.Friends.RemoveFriend;
+using Minigolf.Application.UseCases.Friends.SendFriendRequest;
 using Minigolf.Application.UseCases.Users.GetCurrentUser;
 using Minigolf.Application.UseCases.Users.GetUserByUsername;
 using Minigolf.Infrastructure.Data;
@@ -26,6 +30,11 @@ builder.Services.AddScoped<RegisterUserHandler>();
 builder.Services.AddScoped<LoginUserHandler>();
 builder.Services.AddScoped<GetCurrentUserHandler>();
 builder.Services.AddScoped<GetUserByUsernameHandler>();
+builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+builder.Services.AddScoped<GetFriendsHandler>();
+builder.Services.AddScoped<SendFriendRequestHandler>();
+builder.Services.AddScoped<AcceptFriendRequestHandler>();
+builder.Services.AddScoped<RemoveFriendHandler>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       .AddJwtBearer(options =>
