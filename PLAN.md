@@ -5,6 +5,7 @@
 - **Backend:** ASP.NET Core Web API (C#), deployed to Railway or Render
 - **Database:** PostgreSQL via Supabase
 - **Auth:** JWT-based (BCrypt for password hashing)
+- **Architecture:** Clean Architecture (Domain → Application → Infrastructure → WebApi)
 - **Structure:** Monorepo — /frontend and /backend in one git repo
 
 ---
@@ -18,34 +19,59 @@
 ├── PLAN.md
 │
 ├── /backend
-│   ├── MinigolfApi.csproj
-│   ├── Program.cs
-│   ├── appsettings.json
-│   ├── appsettings.Development.json
-│   ├── /Controllers
-│   │   ├── AuthController.cs
-│   │   ├── UsersController.cs
-│   │   ├── FriendsController.cs
-│   │   ├── CoursesController.cs
-│   │   └── GamesController.cs
-│   ├── /Models
-│   │   ├── User.cs
-│   │   ├── Friendship.cs
-│   │   ├── Course.cs
-│   │   ├── CourseHole.cs
-│   │   ├── Game.cs
-│   │   ├── GamePlayer.cs
-│   │   └── Score.cs
-│   ├── /DTOs
-│   ├── /Services
-│   ├── /Repositories
-│   ├── /Data
-│   │   └── AppDbContext.cs
-│   ├── /Migrations
-│   ├── /Middleware
-│   │   └── JwtMiddleware.cs
-│   └── /Helpers
-│       └── JwtHelper.cs
+│   ├── /Minigolf.Domain                  ← Entities only, no dependencies
+│   │   └── /Models
+│   │       ├── User.cs
+│   │       ├── Friendship.cs
+│   │       ├── Course.cs
+│   │       ├── CourseHole.cs
+│   │       ├── Game.cs
+│   │       ├── GamePlayer.cs
+│   │       └── Score.cs
+│   │
+│   ├── /Minigolf.Application             ← Business logic, depends on Domain only
+│   │   ├── /DTOs
+│   │   │   ├── UserDto.cs
+│   │   │   └── AuthResponse.cs
+│   │   ├── /Interfaces
+│   │   │   ├── IUserRepository.cs
+│   │   │   └── IJwtService.cs
+│   │   └── /UseCases
+│   │       └── /Auth
+│   │           ├── /RegisterUser
+│   │           │   ├── RegisterUserCommand.cs
+│   │           │   ├── RegisterUserHandler.cs
+│   │           │   └── RegisterUserResult.cs
+│   │           └── /LoginUser
+│   │               ├── LoginUserCommand.cs
+│   │               ├── LoginUserHandler.cs
+│   │               └── LoginUserResult.cs
+│   │
+│   ├── /Minigolf.Infrastructure          ← EF Core, JWT, repos — depends on Application
+│   │   ├── /Data
+│   │   │   └── AppDbContext.cs
+│   │   ├── /Persistance
+│   │   │   ├── /Repositories
+│   │   │   │   └── UserRepository.cs
+│   │   │   ├── /Configurations
+│   │   │   └── /Migrations
+│   │   └── /Services
+│   │       ├── JwtService.cs
+│   │       └── UserService.cs
+│   │
+│   └── /Minigolf.WebApi                  ← HTTP layer only, depends on Application
+│       ├── Program.cs
+│       ├── appsettings.json
+│       ├── appsettings.Development.json
+│       ├── /Controllers
+│       │   ├── AuthController.cs
+│       │   ├── UsersController.cs
+│       │   ├── FriendsController.cs
+│       │   ├── CoursesController.cs
+│       │   └── GamesController.cs
+│       ├── /DTOs                         ← Request/response models (WebApi-specific)
+│       ├── /Middleware
+│       └── /Identity
 │
 └── /frontend
     ├── package.json
@@ -54,7 +80,6 @@
     └── /src
         ├── main.tsx
         ├── App.tsx
-        ├── /assets
         ├── /types
         ├── /services
         │   ├── api.ts
@@ -234,16 +259,20 @@
 
 ## Build Order
 
-- [x] 1. Monorepo setup (git, .gitignore, folders)
-- [ ] 2. Supabase: create project + define all tables
-- [ ] 3. Backend: EF Core scaffold + Npgsql + connect to Supabase
-- [ ] 4. Backend: Auth endpoints (register, login, JWT)
-- [ ] 5. Frontend: Vite scaffold + routing + axios + auth store
-- [ ] 6. Frontend: Login + Register pages (first full end-to-end feature)
-- [ ] 7. Backend: Users + Friends endpoints
-- [ ] 8. Frontend: Profile page + Friends UI
-- [ ] 9. Backend: Courses endpoints + seed data
-- [ ] 10. Backend: Games endpoints (create, scores, results)
-- [ ] 11. Frontend: New Game multi-step flow (Steps 1–6)
-- [ ] 12. Deploy: Vercel (frontend) + Railway/Render (backend)
-- [ ] 13. *(Future)* Game History page + endpoint
+- [x] 1. Monorepo setup (git, .gitignore, solution + 4 projects)
+- [x] 2. Domain layer: entity models
+- [x] 3. Application layer: interfaces, DTOs, use case handlers (Register, Login)
+- [x] 4. Infrastructure layer: AppDbContext (EF Core + Npgsql), UserRepository, JwtService
+- [x] 5. WebApi: Program.cs with DI wired up (services, handlers, JWT middleware)
+- [x] 6. Backend: AuthController (POST /api/auth/register, POST /api/auth/login)
+- [x] 7. Supabase: create project + provision PostgreSQL + run EF Core migrations
+- [x] 8. Backend: UsersController (GET /api/users/me, GET /api/users/{username})
+- [ ] 9. Backend: FriendsController + friend request use cases
+- [ ] 10. Backend: CoursesController + seed data
+- [ ] 11. Backend: GamesController (create, scores, results)
+- [ ] 12. Frontend: Vite scaffold + routing + axios + auth store
+- [ ] 13. Frontend: Login + Register pages (first full end-to-end feature)
+- [ ] 14. Frontend: Profile page + Friends UI
+- [ ] 15. Frontend: New Game multi-step flow (Steps 1–6)
+- [ ] 16. Deploy: Vercel (frontend) + Railway/Render (backend)
+- [ ] 17. *(Future)* Game History page + endpoint
