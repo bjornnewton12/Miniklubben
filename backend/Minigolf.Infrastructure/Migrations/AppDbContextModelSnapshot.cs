@@ -63,9 +63,6 @@ namespace Minigolf.Infrastructure.Migrations
                     b.Property<int>("HoleNumber")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Par")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId", "HoleNumber")
