@@ -9,3 +9,4 @@ public sealed record SendFriendRequestResult(bool Success, FriendshipDto? Friend
 
     public static SendFriendRequestResult Fail(string error) =>
         new(false, null, error);
+}
