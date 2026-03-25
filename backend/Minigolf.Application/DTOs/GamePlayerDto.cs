@@ -5,6 +5,7 @@ public sealed record GamePlayerDto(
     Guid GameId,
     Guid? UserId,
     string? GuestName,
+    Guid? AssignedColorId,
     int? FinalScore,
     int? Rank
     );

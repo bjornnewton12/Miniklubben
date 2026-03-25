@@ -16,7 +16,7 @@ public sealed class GetGameResultHandler(IGameRepository gameRepository)
             return GetGameResultResult.Fail("Game is not completed");
 
         var players = game.Players.OrderBy(p => p.Rank)
-            .Select(p => new GamePlayerDto(p.Id, p.GameId, p.UserId, p.GuestName, p.FinalScore, p.Rank)).ToList();
+            .Select(p => new GamePlayerDto(p.Id, p.GameId, p.UserId, p.GuestName, p.AssignedColorId, p.FinalScore, p.Rank)).ToList();
 
 
         return GetGameResultResult.Ok(players);

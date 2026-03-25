@@ -14,8 +14,10 @@ using Minigolf.Application.UseCases.Games.CreateGame;
 using Minigolf.Application.UseCases.Games.GetGameById;
 using Minigolf.Application.UseCases.Games.GetGameResults;
 using Minigolf.Application.UseCases.Games.SubmitScores;
+using Minigolf.Application.UseCases.Users.GetColors;
 using Minigolf.Application.UseCases.Users.GetCurrentUser;
 using Minigolf.Application.UseCases.Users.GetUserByUsername;
+using Minigolf.Application.UseCases.Users.UpdateColorRankings;
 using Minigolf.Infrastructure.Data;
 using Minigolf.Infrastructure.Persistance.Repositories;
 using Minigolf.Infrastructure.Services;
@@ -54,6 +56,9 @@ builder.Services.AddScoped<GetGameByIdHandler>();
 builder.Services.AddScoped<SubmitScoresHandler>();
 builder.Services.AddScoped<GetGameResultHandler>();
 
+builder.Services.AddScoped<IColorRepository, ColorRepository>();
+builder.Services.AddScoped<GetColorsHandler>();
+builder.Services.AddScoped<UpdateColorRankingsHandler>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       .AddJwtBearer(options =>

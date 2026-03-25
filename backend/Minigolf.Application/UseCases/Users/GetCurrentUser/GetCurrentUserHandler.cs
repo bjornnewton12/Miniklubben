@@ -11,7 +11,7 @@ public sealed class GetCurrentUserHandler(IUserRepository userRepository)
         if (user == null)
             return GetCurrentUserResult.Fail("User not found");
 
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt);
+        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, []);
 
         return GetCurrentUserResult.Ok(userDto);
     }

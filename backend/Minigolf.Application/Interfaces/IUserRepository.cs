@@ -12,6 +12,7 @@ public interface IUserRepository
 
     // Saves new user to the database and returns the saved user.
     Task<User> CreateAsync(User user);
-
     Task<User?> GetByIdAsync(Guid id);
+    Task SaveColorRankingsAsync(Guid userId, List<Guid> colorIds);
+    Task<List<UserColorRanking>> GetColorRankingsByUserIdsAsync(IEnumerable<Guid> userIds);
 }

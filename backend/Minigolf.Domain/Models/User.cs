@@ -12,4 +12,5 @@ public class User
     public ICollection<Friendship> ReceivedFriendRequests { get; set; } = [];
     public ICollection<Game> CreatedGames { get; set; } = [];
     public ICollection<GamePlayer> GamePlayers { get; set; } = [];
+    public ICollection<UserColorRanking> ColorRankings { get; set; } = [];
 }

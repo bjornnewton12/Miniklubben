@@ -7,5 +7,6 @@ public sealed record UserDto(
     Guid Id,
     string Username,
     string AvatarId,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    List<ColorDto> ColorRankings
     );

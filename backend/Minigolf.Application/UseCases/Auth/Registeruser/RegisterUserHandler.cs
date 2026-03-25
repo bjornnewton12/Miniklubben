@@ -16,14 +16,16 @@ public sealed class RegisterUserHandler (IUserRepository userRepository, IJwtSer
         var user = new User
         {
             Username = cmd.Username,
-            PasswordHash = "to_be_hashed"
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(cmd.Password),
+            AvatarId = cmd.AvatarId
         };
 
         // Save the user
         var savedUser = await userRepository.CreateAsync(user);
+        await userRepository.SaveColorRankingsAsync(savedUser.Id, cmd.ColorRankingIds);
         var token = jwtService.GenerateToken(savedUser);
 
-        var userDto = new UserDto(savedUser.Id, savedUser.Username, savedUser.AvatarId, savedUser.CreatedAt);
+        var userDto = new UserDto(savedUser.Id, savedUser.Username, savedUser.AvatarId, savedUser.CreatedAt, []);
 
         return RegisterUserResult.Ok(userDto, token);
     }

@@ -22,7 +22,7 @@ public sealed class LoginUserHandler(IUserRepository userRepository, IJwtService
         var token = jwtService.GenerateToken(user);
 
         // 4.Map to UserDto
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt);
+        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, []);
 
         // 5.Return Ok
         return LoginUserResult.Ok(userDto, token);
