@@ -2,5 +2,7 @@
 
 public sealed record RegisterUserCommand(
     string Username,
-    string Password
+    string Password,
+    string AvatarId,
+    List<Guid> ColorRankingIds
     );

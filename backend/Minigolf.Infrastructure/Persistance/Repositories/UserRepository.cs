@@ -28,4 +28,27 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
     {
         return await db.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
+
+    public async Task SaveColorRankingsAsync(Guid userId, List<Guid> colorIds)
+    {
+        var existing = db.UserColorRankings.Where(r => r.UserId == userId);
+        db.UserColorRankings.RemoveRange(existing);
+
+        var rankings = colorIds.Select((colorId, index) => new UserColorRanking
+        {
+            UserId = userId,
+            ColorId = colorId,
+            Rank = index + 1
+        });
+
+        db.UserColorRankings.AddRange(rankings);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task<List<UserColorRanking>> GetColorRankingsByUserIdsAsync(IEnumerable<Guid> userIds)
+    {
+        return await db.UserColorRankings
+            .Where(r => userIds.Contains(r.UserId))
+            .ToListAsync();
+    }
 }

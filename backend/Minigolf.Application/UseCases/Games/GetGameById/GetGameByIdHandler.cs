@@ -20,7 +20,7 @@ public sealed class GetGameByIdHandler(IGameRepository gameRepository)
               game.Status,
               game.CreatedAt,
               game.CompletedAt,
-              game.Players.Select(p => new GamePlayerDto(p.Id, p.GameId, p.UserId, p.GuestName, p.FinalScore, p.Rank)).ToList()
+              game.Players.Select(p => new GamePlayerDto(p.Id, p.GameId, p.UserId, p.GuestName, p.AssignedColorId, p.FinalScore, p.Rank)).ToList()
             );
 
         return GetGameByIdResult.Ok(dto);

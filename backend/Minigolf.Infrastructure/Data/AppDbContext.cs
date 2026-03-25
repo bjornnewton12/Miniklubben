@@ -12,6 +12,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Game> Games => Set<Game>();
     public DbSet<GamePlayer> GamePlayers => Set<GamePlayer>();
     public DbSet<Score> Scores => Set<Score>();
+    public DbSet<Color> Colors => Set<Color>();
+    public DbSet<UserColorRanking> UserColorRankings => Set<UserColorRanking>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -94,6 +96,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithMany(u => u.GamePlayers)
                 .HasForeignKey(p => p.UserId)
                 .IsRequired(false);
+
+            e.HasOne(p => p.AssignedColor)
+                  .WithMany()
+                  .HasForeignKey(p => p.AssignedColorId)
+                  .IsRequired(false);
         });
 
         // Score
@@ -108,5 +115,35 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasForeignKey(s => s.GamePlayerId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        modelBuilder.Entity<Color>(e =>
+        {
+            e.HasKey(c => c.Id);
+            e.Property(c => c.Id).HasDefaultValueSql("gen_random_uuid()");
+        });
+
+        modelBuilder.Entity<UserColorRanking>(e =>
+        {
+            e.HasKey(r => new { r.UserId, r.ColorId });
+
+            e.HasOne(r => r.User)
+                .WithMany(u => u.ColorRankings)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(r => r.Color)
+                .WithMany(c => c.UserColorRankings)
+                .HasForeignKey(r => r.ColorId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Color>().HasData(
+              new Color { Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), Name = "Lila", HexValue = "#A855F7" },
+              new Color { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), Name = "Gul", HexValue = "#EAB308" },
+              new Color { Id = Guid.Parse("33333333-3333-3333-3333-333333333333"), Name = "Gr\u00f6n", HexValue = "#22C55E" },
+              new Color { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Name = "Bl\u00e5", HexValue = "#3B82F6" },
+              new Color { Id = Guid.Parse("55555555-5555-5555-5555-555555555555"), Name = "Orange", HexValue = "#F97316" },
+              new Color { Id = Guid.Parse("66666666-6666-6666-6666-666666666666"), Name = "R\u00f6d", HexValue = "#EF4444" }
+  );
     }
 }
