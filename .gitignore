@@ -1,8 +1,8 @@
 # ========================
 # .NET / ASP.NET Core
 # ========================
-backend/bin/
-backend/obj/
+**/bin/
+**/obj/
 backend/.vs/
 backend/*.user
 backend/**/.vs/
