@@ -1,5 +1,3 @@
-using Minigolf.Domain.Models;
-
 namespace Minigolf.Domain.Models;
 
 public class Game

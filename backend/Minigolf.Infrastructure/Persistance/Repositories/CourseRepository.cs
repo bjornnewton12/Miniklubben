@@ -19,4 +19,11 @@ public sealed class CourseRepository(AppDbContext db) : ICourseRepository
             .Include(c => c.Holes)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
+
+    public async Task<Course> CreateAsync(Course course)
+    {
+        db.Courses.Add(course);
+        await db.SaveChangesAsync();
+        return course;
+    }
 }
