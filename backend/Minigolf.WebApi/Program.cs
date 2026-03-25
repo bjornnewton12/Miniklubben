@@ -10,6 +10,10 @@ using Minigolf.Application.UseCases.Friends.AcceptFriendRequest;
 using Minigolf.Application.UseCases.Friends.GetFriends;
 using Minigolf.Application.UseCases.Friends.RemoveFriend;
 using Minigolf.Application.UseCases.Friends.SendFriendRequest;
+using Minigolf.Application.UseCases.Games.CreateGame;
+using Minigolf.Application.UseCases.Games.GetGameById;
+using Minigolf.Application.UseCases.Games.GetGameResults;
+using Minigolf.Application.UseCases.Games.SubmitScores;
 using Minigolf.Application.UseCases.Users.GetCurrentUser;
 using Minigolf.Application.UseCases.Users.GetUserByUsername;
 using Minigolf.Infrastructure.Data;
@@ -43,6 +47,13 @@ builder.Services.AddScoped<RemoveFriendHandler>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<GetCoursesHandler>();
 builder.Services.AddScoped<GetCoursesByIdHandler>();
+
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<CreateGameHandler>();
+builder.Services.AddScoped<GetGameByIdHandler>();
+builder.Services.AddScoped<SubmitScoresHandler>();
+builder.Services.AddScoped<GetGameResultHandler>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       .AddJwtBearer(options =>
