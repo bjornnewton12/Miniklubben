@@ -138,12 +138,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         });
 
         modelBuilder.Entity<Color>().HasData(
-              new Color { Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), Name = "Lila", HexValue = "#A855F7" },
-              new Color { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), Name = "Gul", HexValue = "#EAB308" },
-              new Color { Id = Guid.Parse("33333333-3333-3333-3333-333333333333"), Name = "Gr\u00f6n", HexValue = "#22C55E" },
-              new Color { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Name = "Bl\u00e5", HexValue = "#3B82F6" },
-              new Color { Id = Guid.Parse("55555555-5555-5555-5555-555555555555"), Name = "Orange", HexValue = "#F97316" },
-              new Color { Id = Guid.Parse("66666666-6666-6666-6666-666666666666"), Name = "R\u00f6d", HexValue = "#EF4444" }
+              new Color { Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), Name = "Tomat", HexValue = "#F81803" },
+              new Color { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), Name = "Korall", HexValue = "#FE9377" },
+              new Color { Id = Guid.Parse("33333333-3333-3333-3333-333333333333"), Name = "Rosa", HexValue = "#F7A6AD" },
+              new Color { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Name = "Gullris", HexValue = "#F6B859" },
+              new Color { Id = Guid.Parse("55555555-5555-5555-5555-555555555555"), Name = "Havsgr\u00f6n", HexValue = "#45AC7F" },
+              new Color { Id = Guid.Parse("66666666-6666-6666-6666-666666666666"), Name = "Kungsbl\u00e5", HexValue = "#4B69FE" }
   );
     }
 }

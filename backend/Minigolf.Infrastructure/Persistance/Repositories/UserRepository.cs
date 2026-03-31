@@ -14,7 +14,10 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
 
     public async Task<User?> GetByUsernameAsync(string username)
     {
-        return await db.Users.FirstOrDefaultAsync(u => u.Username == username);
+        return await db.Users
+            .Include(u => u.ColorRankings)
+                .ThenInclude(r => r.Color)
+            .FirstOrDefaultAsync(u => u.Username == username);
     }
 
     public async Task <User> CreateAsync(User user)
@@ -26,7 +29,10 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
 
     public async Task<User?> GetByIdAsync(Guid id)
     {
-        return await db.Users.FirstOrDefaultAsync(u => u.Id == id);
+        return await db.Users
+            .Include(u => u.ColorRankings)
+                .ThenInclude(r => r.Color)
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task SaveColorRankingsAsync(Guid userId, List<Guid> colorIds)
@@ -43,6 +49,15 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
 
         db.UserColorRankings.AddRange(rankings);
         await db.SaveChangesAsync();
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var user = await db.Users.FindAsync(id);
+        if (user == null) return false;
+        db.Users.Remove(user);
+        await db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<List<UserColorRanking>> GetColorRankingsByUserIdsAsync(IEnumerable<Guid> userIds)

@@ -7,6 +7,7 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public string AvatarId { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public string Role { get; set; } = "user";
 
     public ICollection<Friendship> SentFriendRequests { get; set; } = [];
     public ICollection<Friendship> ReceivedFriendRequests { get; set; } = [];

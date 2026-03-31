@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Minigolf.Application.UseCases.Auth.LoginUser;
 using Minigolf.Application.UseCases.Auth.RegisterUser;
+using Minigolf.Application.UseCases.Auth.CheckUsername;
 using RegisterRequest = Minigolf.WebApi.Contracts.Authorization.RegisterRequest;
 using LoginRequest = Minigolf.WebApi.Contracts.Authorization.LoginRequest;
 
@@ -12,11 +13,13 @@ public sealed class AuthController : ControllerBase
 {
     private readonly RegisterUserHandler _registerHandler;
     private readonly LoginUserHandler _loginHandler;
+    private readonly CheckUsernameHandler _checkUsernameHandler;
 
-    public AuthController(RegisterUserHandler registerHandler, LoginUserHandler loginHandler)
+    public AuthController(RegisterUserHandler registerHandler, LoginUserHandler loginHandler, CheckUsernameHandler checkUsernameHandler)
     {
         _registerHandler = registerHandler;
         _loginHandler = loginHandler;
+        _checkUsernameHandler = checkUsernameHandler;
     }
 
     [HttpPost("register")]
@@ -41,6 +44,13 @@ public sealed class AuthController : ControllerBase
             return Ok(result);
 
         return Unauthorized(result.Error);
+    }
+
+    [HttpGet("check-username/{username}")]
+    public async Task<IActionResult> CheckUsername(string username)
+    {
+        var exists = await _checkUsernameHandler.HandleAsync(username);
+        return Ok(new { exists });
     }
 }
 

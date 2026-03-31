@@ -15,4 +15,5 @@ public interface IUserRepository
     Task<User?> GetByIdAsync(Guid id);
     Task SaveColorRankingsAsync(Guid userId, List<Guid> colorIds);
     Task<List<UserColorRanking>> GetColorRankingsByUserIdsAsync(IEnumerable<Guid> userIds);
+    Task<bool> DeleteAsync(Guid id);
 }

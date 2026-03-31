@@ -21,8 +21,11 @@ public sealed class LoginUserHandler(IUserRepository userRepository, IJwtService
         // 3.Generate token
         var token = jwtService.GenerateToken(user);
 
+        var rankings = await userRepository.GetColorRankingsByUserIdsAsync([user.Id]);
+        var topColor = rankings.OrderBy(r => r.Rank).FirstOrDefault()?.Color.HexValue;
+
         // 4.Map to UserDto
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, []);
+        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, [], topColor);
 
         // 5.Return Ok
         return LoginUserResult.Ok(userDto, token);

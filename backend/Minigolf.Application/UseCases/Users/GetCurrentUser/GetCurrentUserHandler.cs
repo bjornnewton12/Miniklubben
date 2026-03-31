@@ -11,7 +11,11 @@ public sealed class GetCurrentUserHandler(IUserRepository userRepository)
         if (user == null)
             return GetCurrentUserResult.Fail("User not found");
 
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, []);
+        var topColor = user.ColorRankings
+            .OrderBy(r => r.Rank)
+            .FirstOrDefault()?.Color.HexValue;
+
+        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, [], topColor);
 
         return GetCurrentUserResult.Ok(userDto);
     }

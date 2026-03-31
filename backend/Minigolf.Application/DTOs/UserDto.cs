@@ -8,5 +8,6 @@ public sealed record UserDto(
     string Username,
     string AvatarId,
     DateTime CreatedAt,
-    List<ColorDto> ColorRankings
+    List<ColorDto> ColorRankings,
+    string? TopColor
     );

@@ -25,7 +25,7 @@ public sealed class RegisterUserHandler (IUserRepository userRepository, IJwtSer
         await userRepository.SaveColorRankingsAsync(savedUser.Id, cmd.ColorRankingIds);
         var token = jwtService.GenerateToken(savedUser);
 
-        var userDto = new UserDto(savedUser.Id, savedUser.Username, savedUser.AvatarId, savedUser.CreatedAt, []);
+        var userDto = new UserDto(savedUser.Id, savedUser.Username, savedUser.AvatarId, savedUser.CreatedAt, [], null);
 
         return RegisterUserResult.Ok(userDto, token);
     }

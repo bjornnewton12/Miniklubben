@@ -26,4 +26,13 @@ public sealed class CourseRepository(AppDbContext db) : ICourseRepository
         await db.SaveChangesAsync();
         return course;
     }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var course = await db.Courses.FindAsync(id);
+        if (course == null) return false;
+        db.Courses.Remove(course);
+        await db.SaveChangesAsync();
+        return true;
+    }
 }

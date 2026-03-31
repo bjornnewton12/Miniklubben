@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Minigolf.Application.Interfaces;
+using Minigolf.Application.UseCases.Auth.CheckUsername;
 using Minigolf.Application.UseCases.Auth.LoginUser;
 using Minigolf.Application.UseCases.Auth.RegisterUser;
 using Minigolf.Application.UseCases.Courses.GetCourses;
@@ -14,6 +15,8 @@ using Minigolf.Application.UseCases.Games.CreateGame;
 using Minigolf.Application.UseCases.Games.GetGameById;
 using Minigolf.Application.UseCases.Games.GetGameResults;
 using Minigolf.Application.UseCases.Games.SubmitScores;
+using Minigolf.Application.UseCases.Admin.DeleteCourse;
+using Minigolf.Application.UseCases.Admin.DeleteUser;
 using Minigolf.Application.UseCases.Users.GetColors;
 using Minigolf.Application.UseCases.Users.GetCurrentUser;
 using Minigolf.Application.UseCases.Users.GetUserByUsername;
@@ -30,6 +33,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+  {
+      options.AddPolicy("AllowFrontend", policy =>
+      {
+          policy.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+      });
+  });
 builder.Services.AddDbContext<AppDbContext>(options =>
       options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -37,6 +49,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<RegisterUserHandler>();
 builder.Services.AddScoped<LoginUserHandler>();
+builder.Services.AddScoped<CheckUsernameHandler>();
 builder.Services.AddScoped<GetCurrentUserHandler>();
 builder.Services.AddScoped<GetUserByUsernameHandler>();
 
@@ -56,9 +69,17 @@ builder.Services.AddScoped<GetGameByIdHandler>();
 builder.Services.AddScoped<SubmitScoresHandler>();
 builder.Services.AddScoped<GetGameResultHandler>();
 
+builder.Services.AddScoped<DeleteUserHandler>();
+builder.Services.AddScoped<DeleteCourseHandler>();
+
 builder.Services.AddScoped<IColorRepository, ColorRepository>();
 builder.Services.AddScoped<GetColorsHandler>();
 builder.Services.AddScoped<UpdateColorRankingsHandler>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("admin"));
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       .AddJwtBearer(options =>
@@ -85,6 +106,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
