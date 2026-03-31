@@ -11,9 +11,7 @@ public sealed class LoginUserHandler(IUserRepository userRepository, IJwtService
         // 1. Find user by username → Fail("Invalid credentials") if not found
         var user = await userRepository.GetByUsernameAsync(cmd.Username);
 
-        // 2.Verify password → Fail("Invalid credentials") if wrong
-        // TODO verify password hash
-        if (user == null)
+        if (user == null || !BCrypt.Net.BCrypt.Verify(cmd.Password, user.PasswordHash))
         {
             return LoginUserResult.Fail("Invalid credentials");
         }

@@ -12,6 +12,9 @@ public sealed class RegisterUserHandler (IUserRepository userRepository, IJwtSer
         if (await userRepository.UsernameExistsAsync(cmd.Username))
             return RegisterUserResult.Fail($"{cmd.Username} already exists");
 
+        if (cmd.Password.Length < 8)
+            return RegisterUserResult.Fail("Password must be at least 8 characters");
+
         // Create new user
         var user = new User
         {
