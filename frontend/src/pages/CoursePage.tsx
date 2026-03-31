@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { H1, H2 } from '../components/typography/Typography'
+import { H1, H2, H3 } from '../components/typography/Typography'
 import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import { useNewGame } from '../context/NewGameContext'
 
 const DUMMY_COURSES = [
-    { id: '1', name: 'Backaplan' },
+    { id: '1', name: 'Aspuddens Bangolf' },
     { id: '2', name: 'Liseberg' },
     { id: '3', name: 'Slottsskogen' },
     { id: '4', name: 'Hisingen' },
@@ -28,8 +28,9 @@ function CoursePage() {
 
     function addCourse() {
         if (newCourseName.trim() === '') return
+        if (courses.some(c => c.name.toLowerCase() === newCourseName.trim().toLowerCase())) return
         const id = `new-${Date.now()}`
-        setCourses(prev => [...prev, { id, name: newCourseName.trim() }])
+        setCourses(prev => [{ id, name: newCourseName.trim() }, ...prev])
         setCourseId(id)
         setCourseName(newCourseName.trim())
         setNewCourseName('')
@@ -53,9 +54,10 @@ function CoursePage() {
                     onChange={e => setNewCourseName(e.target.value)}
                 />
                 <Button onClick={addCourse}>Lägg till</Button>
-            </Card>
-            <p>Eller välj en du redan spelat på</p>
-            <div className="course-grid">
+
+                <H3>Eller välj en du redan spelat på</H3>
+
+                <div className="course-grid">
                 {courses.map(course => (
                     <div key={course.id} className="course-item" onClick={() => selectCourse(course.id, course.name)}>
                         <div className="course-thumbnail">
@@ -65,6 +67,9 @@ function CoursePage() {
                     </div>
                 ))}
             </div>
+            </Card>
+            
+            
             <Button disabled={!courseId} onClick={() => navigate('/new-game/holes')}>Nästa steg</Button>
         </div>
     )

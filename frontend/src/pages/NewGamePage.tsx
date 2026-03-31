@@ -13,12 +13,12 @@ function randomColor() {
 }
 
 const DUMMY_FRIENDS = [
-    { id: '1', username: 'Agnes', color: '#45AC7F' },
-    { id: '2', username: 'Bo', color: '#FE9377' },
-    { id: '3', username: 'Cecilia', color: '#4B69FE' },
-    { id: '4', username: 'Dawit', color: '#4B69FE' },
-    { id: '5', username: 'Erica', color: '#F81803' },
-    { id: '6', username: 'Filip', color: '#F6B859' },
+    { id: '1', username: 'Pastor Grön', color: '#45AC7F' },
+    { id: '2', username: 'Överste Senap', color: '#F6B859' },
+    { id: '3', username: 'Fru Påfågel', color: '#4B69FE' },
+    { id: '4', username: 'Professor Plommon', color: '#F7A6AD' },
+    { id: '5', username: 'Fröken Sharlakan', color: '#F81803' },
+    { id: '6', username: 'Madam Persika', color: '#FE9377' },
 ]
 
 function NewGamePage() {
@@ -36,13 +36,17 @@ function NewGamePage() {
 
     function toggleFriend(id: string) {
         if (id === userId) return
-        setSelectedIds(
-            selectedIds.includes(id) ? selectedIds.filter(x => x !== id) : [...selectedIds, id]
-        )
+        if (selectedIds.includes(id)) {
+            setSelectedIds(selectedIds.filter(x => x !== id))
+        } else {
+            if (selectedIds.length >= 5) return
+            setSelectedIds([...selectedIds, id])
+        }
     }
 
     function addGuest() {
         if (guestName.trim() === '') return
+        if (selectedIds.length >= 5) return
         const id = `guest-${Date.now()}`
         setGuests([...guests, { id, username: guestName.trim(), color: randomColor() }])
         setSelectedIds([...selectedIds, id])
@@ -70,12 +74,13 @@ function NewGamePage() {
                     value={guestName}
                     onChange={e => setGuestName(e.target.value)}
                 />
-                <Button onClick={addGuest}>Lägg till</Button>
-                <H2>Redo att gå vidare?</H2>
-                <Button disabled={selectedIds.length === 0} onClick={() => navigate('/new-game/course')}>Nästa steg</Button>
+                <Button type="submit" disabled={guestName.trim() === ''} onClick={addGuest}>Lägg till</Button>
+
+                
             </Card>
+
+            <Button disabled={selectedIds.length === 0} onClick={() => navigate('/new-game/course')}>Nästa steg</Button>
         </div>
     )
 }
-
 export default NewGamePage

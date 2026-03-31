@@ -54,7 +54,7 @@ function RegisterStep2Page() {
                 <ColorRanking colors={colors} onMove={moveColor} />
                 <H2>Välj en avatar</H2>
                 <AvatarPicker avatars={AVATARS} selectedId={selectedAvatar} onSelect={setSelectedAvatar} accentColor={colors[0]?.hexValue ?? '#000000'} />
-                <Button disabled={!selectedAvatar} onClick={handleSubmit}>Klart</Button>
+                <Button disabled={!selectedAvatar} onClick={handleSubmit}>Spara</Button>
             </div>
         </div>
     )

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import BottomNav from './components/common/BottomNav'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -12,7 +12,12 @@ import ProfilePage from './pages/ProfilePage'
 import ResultsPage from './pages/ResultsPage'
 import { NewGameProvider } from './context/NewGameContext'
 
+const HIDE_NAV_ROUTES = ['/login', '/register', '/avatar']
+
 function App() {
+  const location = useLocation()
+  const showNav = !HIDE_NAV_ROUTES.includes(location.pathname)
+
   return (
     <>
       <Routes>
@@ -31,7 +36,7 @@ function App() {
         <Route path="/previous-games" element={<div>Tidigare spel</div>} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
-      <BottomNav />
+      {showNav && <BottomNav />}
     </>
   )
 }

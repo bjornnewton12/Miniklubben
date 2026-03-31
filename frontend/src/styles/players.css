@@ -44,6 +44,7 @@
 .player-label {
     font-family: var(--font-primary);
     font-size: 13px;
+    text-align: center;
 }
 
 .avatar-img {
