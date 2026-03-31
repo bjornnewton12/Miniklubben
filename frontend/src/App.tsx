@@ -11,6 +11,8 @@ import ScorecardPage from './pages/ScorecardPage'
 import ProfilePage from './pages/ProfilePage'
 import ResultsPage from './pages/ResultsPage'
 import { NewGameProvider } from './context/NewGameContext'
+import PreviousGamesOverviewPage from './pages/PreviousGamesOverviewPage'
+import PreviousGameResultsPage from './pages/PreviousGameResultsPage'
 
 const HIDE_NAV_ROUTES = ['/login', '/register', '/avatar']
 
@@ -33,7 +35,8 @@ function App() {
           <Route path="scorecard" element={<ScorecardPage />} />
           <Route path="results" element={<ResultsPage />} />
         </Route>
-        <Route path="/previous-games" element={<div>Tidigare spel</div>} />
+        <Route path="/previous-games" element={<PreviousGamesOverviewPage />} />
+        <Route path="/previous-games/:id" element={<PreviousGameResultsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
       {showNav && <BottomNav />}
