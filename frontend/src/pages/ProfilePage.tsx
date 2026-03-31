@@ -1,51 +1,66 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { H1, H2, Label } from '../components/typography/Typography'
 import Button from '../components/common/Button'
 import Input from '../components/common/Input'
+import ErrorMessage from '../components/common/ErrorMessage'
 import { AVATARS } from '../constants/avatars'
-
-const DUMMY_FRIENDS = [
-    { id: '1', username: 'Agnes', color: '#45AC7F' },
-    { id: '2', username: 'Bo', color: '#FE9377' },
-    { id: '3', username: 'Cecilia', color: '#4B69FE' },
-    { id: '4', username: 'Dawit', color: '#4B69FE' },
-    { id: '5', username: 'Erica', color: '#F81803' },
-    { id: '6', username: 'Filip', color: '#F6B859' },
-]
-
-const DUMMY_REQUESTS = [
-    { id: 'r1', username: 'ScarfoWoo', color: '#FE9377', avatarId: 'gelato' },
-    { id: 'r2', username: 'Elin1177', color: '#F81803', avatarId: 'cap' },
-]
+import { getFriends, getFriendRequests, acceptFriendRequest, removeFriend, sendFriendRequest, type FriendDto, type FriendRequestDto } from '../api/friends'
+import { getUserByUsername } from '../api/users'
 
 function ProfilePage() {
-    const { username, avatarId, topColor, logout } = useAuth()
+    const { username, avatarId, topColor, token, logout } = useAuth()
     const navigate = useNavigate()
+    const [friends, setFriends] = useState<FriendDto[]>([])
+    const [requests, setRequests] = useState<FriendRequestDto[]>([])
     const [searchUsername, setSearchUsername] = useState('')
-    const [requests, setRequests] = useState(DUMMY_REQUESTS)
     const [requestSent, setRequestSent] = useState(false)
+    const [addError, setAddError] = useState<string | null>(null)
 
     const avatar = AVATARS.find(a => a.id === avatarId)
 
-    function handleAccept(id: string) {
-        setRequests(prev => prev.filter(r => r.id !== id))
+    useEffect(() => {
+        if (!token) return
+        getFriends(token).then(setFriends)
+        getFriendRequests(token).then(setRequests)
+    }, [token])
+
+    async function handleAccept(friendshipId: string) {
+        if (!token) return
+        await acceptFriendRequest(token, friendshipId)
+        const accepted = requests.find(r => r.friendshipId === friendshipId)!
+        setFriends(prev => [...prev, { friendshipId: accepted.friendshipId, userId: accepted.requesterId, username: accepted.username, avatarId: accepted.avatarId, topColor: accepted.topColor }])
+        setRequests(prev => prev.filter(r => r.friendshipId !== friendshipId))
     }
 
-    function handleRemove(id: string) {
-        setRequests(prev => prev.filter(r => r.id !== id))
+    async function handleRemoveRequest(friendshipId: string) {
+        if (!token) return
+        await removeFriend(token, friendshipId)
+        setRequests(prev => prev.filter(r => r.friendshipId !== friendshipId))
     }
 
-    function handleHittaVän() {
-        setRequestSent(true)
+    async function handleHittaVän() {
+        if (!token) return
+        setAddError(null)
+        const user = await getUserByUsername(token, searchUsername)
+        if (!user) {
+            setAddError('Användaren hittades inte')
+            return
+        }
+        const success = await sendFriendRequest(token, user.id)
+        if (success) {
+            setRequestSent(true)
+            setSearchUsername('')
+        } else {
+            setAddError('Kunde inte skicka vänförfrågan')
+        }
     }
 
     return (
         <div className="page">
             <H1>Profil</H1>
-            <div className="profile-avatar-wrapper" onClick={() =>
-                navigate('/avatar')} style={{ cursor: 'pointer' }}>
+            <div className="profile-avatar-wrapper" onClick={() => navigate('/avatar')} style={{ cursor: 'pointer' }}>
                 {avatar
                     ? <img src={avatar.src} className="profile-avatar" alt="Avatar" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
                     : <div className="profile-avatar profile-avatar--placeholder" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
@@ -57,17 +72,15 @@ function ProfilePage() {
                 <div className="card card--full">
                     <H2>Vänförfrågningar</H2>
                     {requests.map(r => (
-                        <div key={r.id} className="results-row">
-                            <div className="results-avatar" style={{ backgroundColor: r.color }}>
-                                    {(() => { const av = AVATARS.find(a => a.id === r.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
-                                </div>
+                        <div key={r.friendshipId} className="results-row">
+                            <div className="results-avatar" style={{ backgroundColor: r.topColor ?? '#d1d5db' }}>
+                                {(() => { const av = AVATARS.find(a => a.id === r.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
+                            </div>
                             <div>
-                                <div>
-                                    <div className="h2Result">{r.username}</div>
-                                    <div className="friend-request-actions">
-                                        <button className="friend-request-btn" onClick={() => handleAccept(r.id)}>Godkänn</button>
-                                        <button className="friend-request-btn" onClick={() => handleRemove(r.id)}>Ta bort</button>
-                                    </div>
+                                <div className="h2Result">{r.username}</div>
+                                <div className="friend-request-actions">
+                                    <button className="friend-request-btn" onClick={() => handleAccept(r.friendshipId)}>Godkänn</button>
+                                    <button className="friend-request-btn" onClick={() => handleRemoveRequest(r.friendshipId)}>Ta bort</button>
                                 </div>
                             </div>
                         </div>
@@ -78,9 +91,11 @@ function ProfilePage() {
             <div className="card card--full">
                 <H2>Dina vänner</H2>
                 <div className="player-grid">
-                    {DUMMY_FRIENDS.map(f => (
-                        <div key={f.id} className="player-item">
-                            <div className="player-circle" style={{ backgroundColor: f.color }} />
+                    {friends.map(f => (
+                        <div key={f.friendshipId} className="player-item">
+                            <div className="player-circle" style={{ backgroundColor: f.topColor ?? '#d1d5db' }}>
+                                {(() => { const av = AVATARS.find(a => a.id === f.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
+                            </div>
                             <Label>{f.username}</Label>
                         </div>
                     ))}
@@ -89,11 +104,8 @@ function ProfilePage() {
 
             <div className="card card--full">
                 <H2>Lägg till vänner</H2>
-                <Input
-                    label="Användarnamn"
-                    value={searchUsername}
-                    onChange={setSearchUsername}
-                />
+                <Input label="Användarnamn" value={searchUsername} onChange={v => { setSearchUsername(v); setRequestSent(false) }} />
+                <ErrorMessage message={addError} />
                 {requestSent
                     ? <Label>Vänförfrågan skickad!</Label>
                     : <Button onClick={handleHittaVän} disabled={!searchUsername}>Hitta vän</Button>

@@ -3,25 +3,11 @@ import { useNavigate } from 'react-router-dom'
   import Card from '../components/common/Card'
   import Button from '../components/common/Button'
   import { useNewGame } from '../context/NewGameContext'
-  import { useAuth } from '../context/AuthContext'
-
-  const DUMMY_FRIENDS = [
-      { id: '1', username: 'Agnes', color: '#45AC7F' },
-      { id: '2', username: 'Bo', color: '#FE9377' },
-      { id: '3', username: 'Cecilia', color: '#4B69FE' },
-      { id: '4', username: 'Dawit', color: '#4B69FE' },
-      { id: '5', username: 'Erica', color: '#F81803' },
-      { id: '6', username: 'Filip', color: '#F6B859' },
-  ]
+  import { AVATARS } from '../constants/avatars'
 
   function SummaryPage() {
-      const { selectedIds, guests, courseName, holes } = useNewGame()
-      const { userId, username: currentUsername, topColor } = useAuth()
-      const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b' }
+      const { players, courseName, holes } = useNewGame()
       const navigate = useNavigate()
-
-      const allPlayers = [currentUser, ...DUMMY_FRIENDS, ...guests]
-      const selectedPlayers = allPlayers.filter(p => selectedIds.includes(p.id))
 
       return (
           <div className="page">
@@ -32,9 +18,11 @@ import { useNavigate } from 'react-router-dom'
 
                   <H2>Spelare</H2>
                   <div className="player-grid">
-                      {selectedPlayers.map(player => (
+                      {players.map(player => (
                           <div key={player.id} className="player-item">
-                              <div className="player-circle" style={{ backgroundColor: player.color }} />
+                              <div className="player-circle" style={{ backgroundColor: player.color }}>
+                                  {(() => { const av = AVATARS.find(a => a.id === player.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
+                              </div>
                               <span className="player-label">{player.username}</span>
                           </div>
                       ))}

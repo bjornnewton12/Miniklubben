@@ -4,16 +4,6 @@ import { H1, H2 } from '../components/typography/Typography'
 import Button from '../components/common/Button'
 import NumberPad from '../components/game/NumberPad'
 import { useNewGame } from '../context/NewGameContext'
-import { useAuth } from '../context/AuthContext'
-
-const DUMMY_FRIENDS = [
-    { id: '1', username: 'Agnes', color: '#45AC7F' },
-    { id: '2', username: 'Bo', color: '#FE9377' },
-    { id: '3', username: 'Cecilia', color: '#4B69FE' },
-    { id: '4', username: 'Dawit', color: '#4B69FE' },
-    { id: '5', username: 'Erica', color: '#F81803' },
-    { id: '6', username: 'Filip', color: '#F6B859' },
-]
 
 function hexToRgba(hex: string, alpha: number) {
     const r = parseInt(hex.slice(1, 3), 16)
@@ -23,13 +13,9 @@ function hexToRgba(hex: string, alpha: number) {
 }
 
 function ScorecardPage() {
-    const { selectedIds, guests, courseName, holes } = useNewGame()
-    const { userId, username: currentUsername, topColor } = useAuth()
-    const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b' }
+    const { players, courseName, holes } = useNewGame()
+    const selectedPlayers = players
     const navigate = useNavigate()
-
-    const allPlayers = [currentUser, ...DUMMY_FRIENDS, ...guests]
-    const selectedPlayers = allPlayers.filter(p => selectedIds.includes(p.id))
     const holeCount = holes ?? 0
 
     const [scores, setScores] = useState<Record<string, Record<number, number | null>>>(

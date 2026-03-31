@@ -1,14 +1,16 @@
 import { createContext, useContext, useState } from 'react'
 
-interface Guest {
+export interface Player {
     id: string
     username: string
     color: string
+    avatarId: string
 }
 
 interface NewGameState {
     selectedIds: string[]
-    guests: Guest[]
+    guests: Player[]
+    players: Player[]
     courseId: string | null
     courseName: string | null
     holes: number | null
@@ -16,7 +18,8 @@ interface NewGameState {
 
 interface NewGameContextType extends NewGameState {
     setSelectedIds: (ids: string[]) => void
-    setGuests: (guests: Guest[]) => void
+    setGuests: (guests: Player[]) => void
+    setPlayers: (players: Player[]) => void
     setCourseId: (id: string | null) => void
     setCourseName: (name: string | null) => void
     setHoles: (holes: number | null) => void
@@ -26,6 +29,7 @@ interface NewGameContextType extends NewGameState {
 const defaultState: NewGameState = {
     selectedIds: [],
     guests: [],
+    players: [],
     courseId: null,
     courseName: null,
     holes: null,
@@ -40,8 +44,12 @@ export function NewGameProvider({ children }: { children: React.ReactNode }) {
         setState(prev => ({ ...prev, selectedIds }))
     }
 
-    function setGuests(guests: Guest[]) {
+    function setGuests(guests: Player[]) {
         setState(prev => ({ ...prev, guests }))
+    }
+
+    function setPlayers(players: Player[]) {
+        setState(prev => ({ ...prev, players }))
     }
 
     function setCourseId(courseId: string | null) {
@@ -61,7 +69,7 @@ export function NewGameProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <NewGameContext.Provider value={{ ...state, setSelectedIds, setGuests, setCourseId, setCourseName, setHoles, reset }}>
+        <NewGameContext.Provider value={{ ...state, setSelectedIds, setGuests, setPlayers, setCourseId, setCourseName, setHoles, reset }}>
             {children}
         </NewGameContext.Provider>
     )

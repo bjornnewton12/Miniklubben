@@ -5,6 +5,9 @@ import Card from '../components/common/Card'
 import Button from '../components/common/Button'
 import { useNewGame } from '../context/NewGameContext'
 import { useAuth } from '../context/AuthContext'
+import { getFriends, type FriendDto } from '../api/friends'
+import { AVATARS } from '../constants/avatars'
+import type { Player } from '../context/NewGameContext'
 
 const COLORS = ['#45AC7F', '#FE9377', '#4B69FE', '#F81803', '#F6B859', '#F7A6AD']
 
@@ -12,27 +15,32 @@ function randomColor() {
     return COLORS[Math.floor(Math.random() * COLORS.length)]
 }
 
-const DUMMY_FRIENDS = [
-    { id: '1', username: 'Pastor Grön', color: '#45AC7F' },
-    { id: '2', username: 'Överste Senap', color: '#F6B859' },
-    { id: '3', username: 'Fru Påfågel', color: '#4B69FE' },
-    { id: '4', username: 'Professor Plommon', color: '#F7A6AD' },
-    { id: '5', username: 'Fröken Sharlakan', color: '#F81803' },
-    { id: '6', username: 'Madam Persika', color: '#FE9377' },
-]
-
 function NewGamePage() {
-    const { selectedIds, guests, setSelectedIds, setGuests } = useNewGame()
-    const { userId, username: currentUsername, topColor } = useAuth()
-    const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b' }
+    const { selectedIds, guests, setSelectedIds, setGuests, setPlayers } = useNewGame()
+    const { userId, username: currentUsername, topColor, avatarId, token } = useAuth()
+    const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b', avatarId: avatarId ?? '' }
     const [guestName, setGuestName] = useState('')
+    const [friends, setFriends] = useState<FriendDto[]>([])
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if (token) getFriends(token).then(setFriends)
+    }, [token])
 
     useEffect(() => {
         if (userId && !selectedIds.includes(userId)) {
             setSelectedIds([userId, ...selectedIds])
         }
     }, [userId])
+
+    useEffect(() => {
+        const allPlayers: Player[] = [
+            currentUser,
+            ...friends.map(f => ({ id: f.userId, username: f.username, color: f.topColor ?? '#6b6b6b', avatarId: f.avatarId })),
+            ...guests.map(g => ({ ...g, avatarId: 'guest' })),
+        ]
+        setPlayers(allPlayers.filter(p => selectedIds.includes(p.id)))
+    }, [selectedIds, friends, guests])
 
     function toggleFriend(id: string) {
         if (id === userId) return
@@ -48,7 +56,7 @@ function NewGamePage() {
         if (guestName.trim() === '') return
         if (selectedIds.length >= 5) return
         const id = `guest-${Date.now()}`
-        setGuests([...guests, { id, username: guestName.trim(), color: randomColor() }])
+        setGuests([...guests, { id, username: guestName.trim(), color: randomColor(), avatarId: '1' }])
         setSelectedIds([...selectedIds, id])
         setGuestName('')
     }
@@ -59,12 +67,13 @@ function NewGamePage() {
             <Card>
                 <H2>Vilka ska spela?</H2>
                 <div className="player-grid">
-                    {[currentUser, ...DUMMY_FRIENDS, ...guests].map(friend => (
-                        <div key={friend.id} className="player-item" onClick={() => toggleFriend(friend.id)}>
-                            <div className="player-circle" style={{ backgroundColor: friend.color }}>
-                                {selectedIds.includes(friend.id) && <span className="player-checkmark">✓</span>}
+                    {[currentUser, ...friends.map(f => ({ id: f.userId, username: f.username, color: f.topColor ?? '#6b6b6b', avatarId: f.avatarId })), ...guests.map(g => ({ ...g, avatarId: 'guest' }))].map(player => (
+                        <div key={player.id} className="player-item" onClick={() => toggleFriend(player.id)}>
+                            <div className="player-circle" style={{ backgroundColor: player.color }}>
+                                {(() => { const av = AVATARS.find(a => a.id === player.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
+                                {selectedIds.includes(player.id) && <span className="player-checkmark">✓</span>}
                             </div>
-                            <span className="player-label">{friend.username}</span>
+                            <span className="player-label">{player.username}</span>
                         </div>
                     ))}
                 </div>

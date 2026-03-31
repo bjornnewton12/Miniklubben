@@ -1,27 +1,13 @@
 import { useLocation } from "react-router-dom"
 import { useNewGame } from "../context/NewGameContext"
-import { useAuth } from "../context/AuthContext"
-
-const DUMMY_FRIENDS = [
-    { id: '1', username: 'Agnes', color: '#45AC7F' },
-    { id: '2', username: 'Bo', color: '#FE9377' },
-    { id: '3', username: 'Cecilia', color: '#4B69FE' },
-    { id: '4', username: 'Dawit', color: '#4B69FE' },
-    { id: '5', username: 'Erica', color: '#F81803' },
-    { id: '6', username: 'Filip', color: '#F6B859' },
-]
+import { AVATARS } from "../constants/avatars"
 
 function ResultsPage() {
-    const { selectedIds, guests, courseName } = useNewGame()
-    const { userId, username: currentUsername, topColor } = useAuth()
-    const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b' }
+    const { players, courseName } = useNewGame()
     const { state } = useLocation()
     const scores: Record<string, Record<number, number>> = state?.scores ?? {}
 
-    const allPlayers = [currentUser, ...DUMMY_FRIENDS, ...guests]
-    const selectedPlayers = allPlayers.filter(p => selectedIds.includes(p.id))
-
-    const ranked = selectedPlayers
+    const ranked = players
         .map(p => ({
             ...p,
             total: Object.values(scores[p.id] ?? {}).reduce((sum, s) => sum + s, 0)
@@ -35,7 +21,9 @@ function ResultsPage() {
             <div className="card card--full">
                 {ranked.map((p, i) => (
                     <div key={p.id} className="results-row">
-                        <div className="results-avatar" style={{ backgroundColor: p.color }} />
+                        <div className="results-avatar" style={{ backgroundColor: p.color }}>
+                                {(() => { const av = AVATARS.find(a => a.id === p.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
+                            </div>
                         <div>
                             <div className="h3Result">Plats {i + 1} med {(p.total)} poäng</div>
                             <div className="h2Result">{p.username}</div>
