@@ -5,6 +5,7 @@ import { H1, H2 } from '../components/typography/Typography'
 import Card from '../components/common/Card'
 import Input from '../components/common/Input'
 import Button from '../components/common/Button'
+import ErrorMessage from '../components/common/ErrorMessage'
 
 function RegisterPage() {
   const [username, setUsername] = useState('')
@@ -13,9 +14,11 @@ function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
+  const passwordTooShort = password.length > 0 && password.length < 8
+
   const isFormFilled =
     username.trim() !== '' &&
-    password.trim() !== '' &&
+    password.length >= 8 &&
     confirmPassword.trim() !== ''
 
   async function handleSubmit(e: React.SyntheticEvent) {
@@ -40,8 +43,9 @@ function RegisterPage() {
           <H2 className="text-center">Registrera dig</H2>
           <Input label="Användarnamn" value={username} onChange={setUsername} />
           <Input label="Lösenord" type="password" value={password} onChange={setPassword} />
+          <ErrorMessage message={passwordTooShort ? 'Lösenordet måste vara minst 8 tecken långt' : null} />
           <Input label="Upprepa lösenord" type="password" value={confirmPassword} onChange={setConfirmPassword} />
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <ErrorMessage message={!passwordTooShort ? error : null} />
           <Button type="submit" disabled={!isFormFilled}>Registrera</Button>
           <Button variant="ghost" onClick={() => navigate('/login')}>
             Eller gå tillbaka till inlogg

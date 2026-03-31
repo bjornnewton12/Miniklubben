@@ -5,7 +5,7 @@ button {
     font-family: var(--font-primary);
     font-size: 16px;
     cursor: pointer;
-    background-color: #F81803;
+    background-color: #45AC7F;
     color: white;
     display: block;
     margin: 0 auto;
@@ -19,6 +19,5 @@ button:disabled {
 
 button.ghost {
     background-color: transparent;
-    color: #6b6b6b;
-    margin-left: 0;
+    color: black;
 }
