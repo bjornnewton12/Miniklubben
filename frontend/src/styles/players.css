@@ -101,3 +101,22 @@
     cursor: pointer;
     font-size: 14px;
 }
+
+.friend-request-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.friend-request-btn {
+    padding: 4px 14px 4px 0;
+    font-size: 16px;
+    width: auto;
+    margin: 0;
+    display: inline-block;
+    border-radius: 999px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: black;
+}

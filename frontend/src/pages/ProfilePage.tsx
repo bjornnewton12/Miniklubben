@@ -15,13 +15,27 @@ const DUMMY_FRIENDS = [
     { id: '6', username: 'Filip', color: '#F6B859' },
 ]
 
+const DUMMY_REQUESTS = [
+    { id: 'r1', username: 'ScarfoWoo', color: '#FE9377', avatarId: 'gelato' },
+    { id: 'r2', username: 'Elin1177', color: '#F81803', avatarId: 'cap' },
+]
+
 function ProfilePage() {
     const { username, avatarId, topColor, logout } = useAuth()
     const navigate = useNavigate()
     const [searchUsername, setSearchUsername] = useState('')
+    const [requests, setRequests] = useState(DUMMY_REQUESTS)
     const [requestSent, setRequestSent] = useState(false)
 
     const avatar = AVATARS.find(a => a.id === avatarId)
+
+    function handleAccept(id: string) {
+        setRequests(prev => prev.filter(r => r.id !== id))
+    }
+
+    function handleRemove(id: string) {
+        setRequests(prev => prev.filter(r => r.id !== id))
+    }
 
     function handleHittaVän() {
         setRequestSent(true)
@@ -31,13 +45,35 @@ function ProfilePage() {
         <div className="page">
             <H1>Profil</H1>
             <div className="profile-avatar-wrapper" onClick={() =>
-                navigate('/avatar')} style={{ cursor: 'pointer'}}>
+                navigate('/avatar')} style={{ cursor: 'pointer' }}>
                 {avatar
                     ? <img src={avatar.src} className="profile-avatar" alt="Avatar" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
                     : <div className="profile-avatar profile-avatar--placeholder" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
                 }
                 <strong>{username}</strong>
             </div>
+
+            {requests.length > 0 && (
+                <div className="card card--full">
+                    <H2>Vänförfrågningar</H2>
+                    {requests.map(r => (
+                        <div key={r.id} className="results-row">
+                            <div className="results-avatar" style={{ backgroundColor: r.color }}>
+                                    {(() => { const av = AVATARS.find(a => a.id === r.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
+                                </div>
+                            <div>
+                                <div>
+                                    <div className="h2Result">{r.username}</div>
+                                    <div className="friend-request-actions">
+                                        <button className="friend-request-btn" onClick={() => handleAccept(r.id)}>Godkänn</button>
+                                        <button className="friend-request-btn" onClick={() => handleRemove(r.id)}>Ta bort</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             <div className="card card--full">
                 <H2>Dina vänner</H2>

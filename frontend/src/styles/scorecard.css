@@ -91,4 +91,5 @@
     height: 80px;
     border-radius: 50%;
     flex-shrink: 0;
+    overflow: hidden;
 }
