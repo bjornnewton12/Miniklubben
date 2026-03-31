@@ -1,0 +1,40 @@
+.number-pad-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+}
+
+.number-pad {
+    position: fixed;
+    bottom: 65px;
+    left: 0;
+    right: 0;
+    background-color: #d1d5db;
+    padding: 16px;
+    z-index: 50;
+    box-sizing: border-box;
+}
+
+.number-pad__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.number-pad__key {
+    padding: 18px;
+    font-size: 20px;
+    background-color: white;
+    color: black;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    margin: 0;
+    width: 100%;
+}
+
+.number-pad__key--action {
+    background-color: #e5e7eb;
+    color: black;
+}

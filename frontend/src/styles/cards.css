@@ -1,0 +1,17 @@
+.card {
+    background-color: #FDF7EB;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card--full {
+    max-width: 100%;
+    align-items: center;
+    gap: 8px;
+}

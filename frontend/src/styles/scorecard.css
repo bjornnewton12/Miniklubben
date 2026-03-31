@@ -1,0 +1,94 @@
+.scorecard-back {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    color: #6b6b6b;
+    cursor: pointer;
+    display: block;
+}
+
+.scorecard-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.scorecard-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-family: var(--font-primary);
+    font-size: 13px;
+}
+
+.scorecard-hole-header {
+    width: 36px;
+    text-align: left;
+    padding: 6px 8px;
+    font-weight: bold;
+}
+
+.scorecard-player-header {
+    text-align: center;
+    padding: 6px 8px;
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scorecard-hole-cell {
+    padding: 8px;
+    font-weight: bold;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.scorecard-score-cell {
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.scorecard-score-cell--active {
+    font-weight: bold;
+}
+
+.warning-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+}
+
+.warning-dialog {
+    background-color: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    font-family: var(--font-primary);
+}
+
+.results-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.results-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}

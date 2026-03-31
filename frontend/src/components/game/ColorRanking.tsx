@@ -1,7 +1,7 @@
 interface Color {
     id: string
     name: string
-    hex: string
+    hexValue: string
   }
 
   interface ColorRankingProps {
@@ -11,21 +11,17 @@ interface Color {
 
   function ColorRanking({ colors, onMove }: ColorRankingProps) {
     return (
-      <div className="flex flex-col gap-3">
-        {colors.map((color, index) => (
-          <div
-            key={color.id}
-            className="flex items-center justify-between rounded-xl px-4 py-3 text-white font-medium"
-            style={{ backgroundColor: color.hex }}
-          >
-            <span>{color.name}</span>
-            <div className="flex flex-col">
-              <button onClick={() => onMove(index, 'up')} className="text-white leading-none">∧</button>
-              <button onClick={() => onMove(index, 'down')} className="text-white leading-none">∨</button>
-            </div>
-          </div>
-        ))}
-      </div>
+        <div className="color-ranking">
+            {colors.map((color, index) => (
+                <div key={color.id} className="color-ranking__row" style={{ backgroundColor: color.hexValue }}>
+                    <span className="color-ranking__name">{color.name}</span>
+                    <div className="color-ranking__controls">
+                        {index > 0 && <button className="color-ranking__btn" onClick={() => onMove(index, 'up')}>∧</button>}
+                        {index < colors.length - 1 && <button className="color-ranking__btn" onClick={() => onMove(index, 'down')}>∨</button>}
+                    </div>
+                </div>
+            ))}
+        </div>
     )
   }
 

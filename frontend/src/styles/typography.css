@@ -1,0 +1,44 @@
+:root {
+    --font-primary: Arial, sans-serif;
+}
+
+.h1 {
+    font-family: var(--font-primary);
+    font-weight: 900;
+    font-size: 1.875rem;
+    text-align: center;
+}
+
+.h2 {
+    font-family: var(--font-primary);
+    font-weight: 900;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.h2Result {
+    font-family: var(--font-primary);
+    font-weight: 900;
+    font-size: 1.5rem;
+    text-align: left;
+}
+
+.h3 {
+    font-family: var(--font-primary);
+    font-weight: 400;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.h3Result {
+    font-family: var(--font-primary);
+    font-weight: 400;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.label {
+    font-family: var(--font-primary);
+    font-weight: 400;
+    font-size: 0.875rem;
+}

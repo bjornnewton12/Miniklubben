@@ -1,16 +1,27 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { register } from '../api/auth'
+import { useAuth } from '../context/AuthContext'
 import { H2 } from '../components/typography/Typography'
 import Button from '../components/common/Button'
 import ColorRanking from '../components/game/ColorRanking'
 import AvatarPicker from '../components/game/AvatarPicker'
-import { COLORS } from '../constants/colors'
+import { getColors } from '../api/colors'
+import type { ApiColor } from '../api/colors'
 import { AVATARS } from '../constants/avatars'
 
 function RegisterStep2Page() {
-    const [colors, setColors] = useState(COLORS)
+    const [colors, setColors] = useState<ApiColor[]>([])
     const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null)
+    useEffect(() => {
+        getColors().then(setColors)
+    }, [])
     const navigate = useNavigate()
+    const location = useLocation()
+    const state = location.state as { username?: string; password?: string } | null
+    const username = state?.username
+    const password = state?.password
+    const { login: saveAuth, updateAvatar } = useAuth()
 
     function moveColor(index: number, direction: 'up' | 'down') {
         const newColors = [...colors]
@@ -20,24 +31,29 @@ function RegisterStep2Page() {
         setColors(newColors)
     }
 
-    function handleSubmit() {
-        // TODO: call register API with color rankings + avatar
-        console.log({ colorRankings: colors.map(c => c.id), selectedAvatar })
+    async function handleSubmit() {
+        const colorRankingIds = colors.map(c => c.id)
+        if (username && password) {
+            const result = await register(username, password, selectedAvatar!, colorRankingIds)
+            if (result.success && result.user && result.token) {
+                saveAuth(result.token, result.user.username, result.user.id, selectedAvatar!, colors[0].hexValue)
+                navigate('/')
+            } else {
+                console.error(result.error)
+            }
+        } else {
+            updateAvatar(selectedAvatar!, colors[0].hexValue)
+            navigate('/profile')
+        }
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center bg-white px-6 py-10 gap-8">
-            <div className="w-full max-w-sm flex flex-col gap-3">
+        <div className="page">
+            <div className="card card--full">
                 <H2>Rangordna dina favoritfärger</H2>
                 <ColorRanking colors={colors} onMove={moveColor} />
-            </div>
-
-            <div className="w-full max-w-sm flex flex-col gap-3">
-                <H2 className="text-center">Välj en avatar</H2>
-                <AvatarPicker avatars={AVATARS} selectedId={selectedAvatar} onSelect={setSelectedAvatar} />
-            </div>
-
-            <div className="w-full max-w-sm">
+                <H2>Välj en avatar</H2>
+                <AvatarPicker avatars={AVATARS} selectedId={selectedAvatar} onSelect={setSelectedAvatar} accentColor={colors[0]?.hexValue ?? '#000000'} />
                 <Button disabled={!selectedAvatar} onClick={handleSubmit}>Klart</Button>
             </div>
         </div>

@@ -1,0 +1,163 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { H1, H2 } from '../components/typography/Typography'
+import Button from '../components/common/Button'
+import NumberPad from '../components/game/NumberPad'
+import { useNewGame } from '../context/NewGameContext'
+import { useAuth } from '../context/AuthContext'
+
+const DUMMY_FRIENDS = [
+    { id: '1', username: 'Agnes', color: '#45AC7F' },
+    { id: '2', username: 'Bo', color: '#FE9377' },
+    { id: '3', username: 'Cecilia', color: '#4B69FE' },
+    { id: '4', username: 'Dawit', color: '#4B69FE' },
+    { id: '5', username: 'Erica', color: '#F81803' },
+    { id: '6', username: 'Filip', color: '#F6B859' },
+]
+
+function hexToRgba(hex: string, alpha: number) {
+    const r = parseInt(hex.slice(1, 3), 16)
+    const g = parseInt(hex.slice(3, 5), 16)
+    const b = parseInt(hex.slice(5, 7), 16)
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+function ScorecardPage() {
+    const { selectedIds, guests, courseName, holes } = useNewGame()
+    const { userId, username: currentUsername, topColor } = useAuth()
+    const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b' }
+    const navigate = useNavigate()
+
+    const allPlayers = [currentUser, ...DUMMY_FRIENDS, ...guests]
+    const selectedPlayers = allPlayers.filter(p => selectedIds.includes(p.id))
+    const holeCount = holes ?? 0
+
+    const [scores, setScores] = useState<Record<string, Record<number, number | null>>>(
+        Object.fromEntries(selectedPlayers.map(p => [p.id, Object.fromEntries(
+            Array.from({ length: holeCount }, (_, i) => [i + 1, null])
+        )]))
+    )
+
+    const [activeHoles, setActiveHoles] = useState<number[]>(
+        Array.from({ length: holeCount }, (_, i) => i + 1)
+    )
+    const [activeCell, setActiveCell] = useState<{ playerId: string; hole: number } | null>(null)
+    const [showWarning, setShowWarning] = useState(false)
+
+    function handleSelect(value: number) {
+        if (!activeCell) return
+        setScores(prev => ({
+            ...prev,
+            [activeCell.playerId]: { ...prev[activeCell.playerId], [activeCell.hole]: value }
+        }))
+    }
+
+    function handleDelete() {
+        if (!activeCell) return
+        setScores(prev => ({
+            ...prev,
+            [activeCell.playerId]: { ...prev[activeCell.playerId], [activeCell.hole]: null }
+        }))
+    }
+
+    function handleRatta() {
+        const hasEmpty = selectedPlayers.some(p =>
+            activeHoles.some(h => scores[p.id][h] === null)
+        )
+        if (hasEmpty) {
+            setShowWarning(true)
+        } else {
+            navigate('/new-game/results', { state: { scores } })
+        }
+    }
+
+    function handleRattaAndå() {
+        const filledScores = { ...scores }
+        selectedPlayers.forEach(p => {
+            activeHoles.forEach(h => {
+                if (filledScores[p.id][h] === null) filledScores[p.id][h] = 7
+            })
+        })
+        navigate('/new-game/results', { state: { scores: filledScores } })
+    }
+
+    function handlePlockaHål() {
+        const unplayed = activeHoles.filter(h =>
+            selectedPlayers.every(p => scores[p.id][h] === null)
+        )
+        setActiveHoles(prev => prev.filter(h => !unplayed.includes(h)))
+        setShowWarning(false)
+    }
+
+    return (
+        <>
+            <div className={`page${activeCell ? ' page--numpad-active' : ''}`}>
+                <H1>{courseName ?? 'Bana'}</H1>
+                <div className="card card--full">
+                    <button className="scorecard-back" onClick={() => navigate(-1)}>{'< Tillbaka'}</button>
+                    <H2>Sammanfattning</H2>
+                    <div className="scorecard-wrapper">
+                        <table className="scorecard-table">
+                            <thead>
+                                <tr>
+                                    <th className="scorecard-hole-header">Hål</th>
+                                    {selectedPlayers.map(p => (
+                                        <th key={p.id} className="scorecard-player-header" style={{ backgroundColor: hexToRgba(p.color, 0.3) }}>
+                                            {p.username}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {activeHoles.map(hole => (
+                                    <tr key={hole}>
+                                        <td className="scorecard-hole-cell">{hole}.</td>
+                                        {selectedPlayers.map(p => {
+                                            const isActive = activeCell?.playerId === p.id && activeCell?.hole === hole
+                                            return (
+                                                <td
+                                                    key={p.id}
+                                                    className={`scorecard-score-cell${isActive ? ' scorecard-score-cell--active' : ''}`}
+                                                    style={{ backgroundColor: hexToRgba(p.color, isActive ? 0.35 : 0.15) }}
+                                                    onClick={() => setActiveCell({ playerId: p.id, hole })}
+                                                >
+                                                    {scores[p.id][hole] ?? '-'}
+                                                </td>
+                                            )
+                                        })}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <Button onClick={handleRatta}>Rätta</Button>
+
+                {showWarning && (
+                    <div className="warning-overlay">
+                        <div className="warning-dialog">
+                            <p>Alla har inte spelat på varje hål än. Om du väljer att rätta nu kommer alla ospelade hål automatiskt få 7 poäng. Om du tog misst på antalet hål kan du välja att plocka bort de hål som är helt ospelade.</p>
+                            <Button onClick={handleRattaAndå}>Rätta ändå</Button>
+                            <Button onClick={handlePlockaHål}>Plocka bort hål</Button>
+                            <Button onClick={() => setShowWarning(false)}>Avbryt</Button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {activeCell && (
+                <>
+                    <div className="number-pad-backdrop" onClick={() => setActiveCell(null)} />
+                    <NumberPad
+                        onSelect={handleSelect}
+                        onDelete={handleDelete}
+                        onClose={() => setActiveCell(null)}
+                    />
+                </>
+            )}
+        </>
+    )
+}
+
+export default ScorecardPage

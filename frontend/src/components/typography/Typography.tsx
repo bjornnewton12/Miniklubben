@@ -7,7 +7,7 @@ import React from 'react'
 
   export function H1({ children, className = '' }: TextProps) {
     return (
-      <h1 className={`font-black text-3xl font-[Arial] ${className}`}>
+      <h1 className={`h1 ${className}`}>
         {children}
       </h1>
     )
@@ -15,7 +15,7 @@ import React from 'react'
 
   export function H2({ children, className = '' }: TextProps) {
     return (
-      <h2 className={`font-black text-2xl font-[Arial] ${className}`}>
+      <h2 className={`h2 ${className}`}>
         {children}
       </h2>
     )
@@ -23,7 +23,7 @@ import React from 'react'
 
   export function H3({ children, className = '' }: TextProps) {
     return (
-      <h3 className={`font-normal text-base font-[Arial] ${className}`}>
+      <h3 className={`h3 ${className}`}>
         {children}
       </h3>
     )
@@ -31,7 +31,7 @@ import React from 'react'
 
   export function Label({ children, className = '' }: TextProps) {
     return (
-      <p className={`font-normal text-sm font-[Arial] ${className}`}>
+      <p className={`label ${className}`}>
         {children}
       </p>
     )

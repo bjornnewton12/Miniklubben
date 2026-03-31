@@ -1,0 +1,16 @@
+.summary-course {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0 16px 0;
+    width: 100%;
+}
+
+.summary-course-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--font-primary);
+    font-size: 14px;
+}

@@ -7,7 +7,7 @@ import React from 'react'
 
   function Card({ children, className = '' }: CardProps) {
     return (
-      <div className={`w-full max-w-sm bg-gray-100 rounded-2xl p-6 ${className}`}>
+      <div className={`card ${className}`}>
         {children}
       </div>
     )

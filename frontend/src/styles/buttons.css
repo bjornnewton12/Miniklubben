@@ -1,0 +1,23 @@
+button {
+    padding: 12px 32px;
+    border-radius: 999px;
+    border: none;
+    font-family: var(--font-primary);
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #6b6b6b;
+    color: white;
+    display: block;
+    margin: 0 auto;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    background-color: #FFFCF5;
+    color: black;
+}
+
+button.ghost {
+    background-color: transparent;
+    color: #6b6b6b;
+}
