@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Minigolf.Application.UseCases.Friends.AcceptFriendRequest;
+using Minigolf.Application.UseCases.Friends.GetFriendRequests;
 using Minigolf.Application.UseCases.Friends.GetFriends;
 using Minigolf.Application.UseCases.Friends.RemoveFriend;
 using Minigolf.Application.UseCases.Friends.SendFriendRequest;
@@ -16,13 +17,15 @@ public sealed class FriendsController : ControllerBase
 {
     private readonly AcceptFriendRequestHandler _acceptFriendRequestHandler;
     private readonly GetFriendsHandler _getFriendsHandler;
+    private readonly GetFriendRequestsHandler _getFriendRequestsHandler;
     private readonly RemoveFriendHandler _removeFriendHandler;
     private readonly SendFriendRequestHandler _sendFriendRequestHandler;
 
-    public FriendsController(AcceptFriendRequestHandler acceptFriendRequestHandler, GetFriendsHandler getFriendsHandler, RemoveFriendHandler removeFriendHandler, SendFriendRequestHandler sendFriendRequestHandler)
+    public FriendsController(AcceptFriendRequestHandler acceptFriendRequestHandler, GetFriendsHandler getFriendsHandler, GetFriendRequestsHandler getFriendRequestsHandler, RemoveFriendHandler removeFriendHandler, SendFriendRequestHandler sendFriendRequestHandler)
     {
         _acceptFriendRequestHandler = acceptFriendRequestHandler;
         _getFriendsHandler = getFriendsHandler;
+        _getFriendRequestsHandler = getFriendRequestsHandler;
         _removeFriendHandler = removeFriendHandler;
         _sendFriendRequestHandler = sendFriendRequestHandler;
     }
@@ -41,6 +44,17 @@ public sealed class FriendsController : ControllerBase
             return Ok(result);
 
         return NotFound(result.Error);
+    }
+
+    [HttpGet("requests")]
+    public async Task<IActionResult> GetFriendRequests()
+    {
+        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdString == null || !Guid.TryParse(userIdString, out var userId))
+            return Unauthorized();
+
+        var result = await _getFriendRequestsHandler.HandleAsync(new GetFriendRequestsQuery(userId));
+        return Ok(result);
     }
 
     [HttpPost("request")]

@@ -9,10 +9,20 @@ public sealed class FriendshipRepository(AppDbContext db) : IFriendshipRepositor
 {
     //  - GetAcceptedFriendsAsync — query db.Friendships where Status
     //== "accepted" AND either RequesterId == userId OR AddresseeId == userId
-    public async Task <List<Friendship>> GetAcceptedFriendsAsync(Guid userId)
+    public async Task<List<Friendship>> GetAcceptedFriendsAsync(Guid userId)
     {
         return await db.Friendships
+            .Include(f => f.Requester).ThenInclude(u => u.ColorRankings).ThenInclude(r => r.Color)
+            .Include(f => f.Addressee).ThenInclude(u => u.ColorRankings).ThenInclude(r => r.Color)
             .Where(f => f.Status == "accepted" && (f.RequesterId == userId || f.AddresseeId == userId))
+            .ToListAsync();
+    }
+
+    public async Task<List<Friendship>> GetPendingRequestsAsync(Guid userId)
+    {
+        return await db.Friendships
+            .Include(f => f.Requester).ThenInclude(u => u.ColorRankings).ThenInclude(r => r.Color)
+            .Where(f => f.Status == "pending" && f.AddresseeId == userId)
             .ToListAsync();
     }
 

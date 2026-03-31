@@ -9,13 +9,12 @@ public sealed class GetFriendsHandler(IFriendshipRepository friendshipRepository
     {
         var friendships = await friendshipRepository.GetAcceptedFriendsAsync(query.UserId);
 
-        var dtos = friendships.Select(f => new FriendshipDto(
-            f.Id,
-            f.RequesterId,
-            f.AddresseeId,
-            f.Status,
-            f.CreatedAt
-            )).ToList();
+        var dtos = friendships.Select(f =>
+        {
+            var friend = f.RequesterId == query.UserId ? f.Addressee : f.Requester;
+            var topColor = friend.ColorRankings.OrderBy(r => r.Rank).FirstOrDefault()?.Color.HexValue;
+            return new FriendDto(f.Id, friend.Id, friend.Username, friend.AvatarId, topColor);
+        }).ToList();
 
         return GetFriendsResult.Ok(dtos);
     }

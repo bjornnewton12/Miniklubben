@@ -7,6 +7,9 @@ public interface IFriendshipRepository
     // Returns all accepted friends
     Task<List<Friendship>> GetAcceptedFriendsAsync(Guid userId);
 
+    // Returns all pending friend requests received by the user
+    Task<List<Friendship>> GetPendingRequestsAsync(Guid userId);
+
     // Returns friendship by Id, or null if not found
     Task<Friendship?> GetByIdAsync(Guid id);
 

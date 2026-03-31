@@ -2,10 +2,10 @@
 
 namespace Minigolf.Application.UseCases.Friends.GetFriends;
 
-public sealed record GetFriendsResult(bool Success, List<FriendshipDto>? Friendships, string? Error)
+public sealed record GetFriendsResult(bool Success, List<FriendDto>? Friends, string? Error)
 {
-    public static GetFriendsResult Ok(List<FriendshipDto> friendships) =>
-        new(true, friendships, null);
+    public static GetFriendsResult Ok(List<FriendDto> friends) =>
+        new(true, friends, null);
 
     public static GetFriendsResult Fail(string error) =>
         new(false, null, error);

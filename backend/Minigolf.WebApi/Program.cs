@@ -8,6 +8,7 @@ using Minigolf.Application.UseCases.Auth.RegisterUser;
 using Minigolf.Application.UseCases.Courses.GetCourses;
 using Minigolf.Application.UseCases.Courses.GetCoursesById;
 using Minigolf.Application.UseCases.Friends.AcceptFriendRequest;
+using Minigolf.Application.UseCases.Friends.GetFriendRequests;
 using Minigolf.Application.UseCases.Friends.GetFriends;
 using Minigolf.Application.UseCases.Friends.RemoveFriend;
 using Minigolf.Application.UseCases.Friends.SendFriendRequest;
@@ -55,6 +56,7 @@ builder.Services.AddScoped<GetUserByUsernameHandler>();
 
 builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 builder.Services.AddScoped<GetFriendsHandler>();
+builder.Services.AddScoped<GetFriendRequestsHandler>();
 builder.Services.AddScoped<SendFriendRequestHandler>();
 builder.Services.AddScoped<AcceptFriendRequestHandler>();
 builder.Services.AddScoped<RemoveFriendHandler>();
