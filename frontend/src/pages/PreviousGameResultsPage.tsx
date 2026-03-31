@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { H1 } from '../components/typography/Typography'
+import { H1, H2 } from '../components/typography/Typography'
 
 type Player = {
     id: string
@@ -26,9 +26,9 @@ function PreviousGameResultsPage() {
         <div className="page">
             <H1>{game.courseName}</H1>
             <div className="card card--full">
-                <button className="ghost" onClick={() =>
+                <button className="ghost" style={{ marginLeft: 0 }} onClick={() =>
                     navigate('/previous-games')}>{'< Tillbaka'}</button>
-                <div className="h3">Resultat</div>
+                <H2>Resultat</H2>
                 {ranked.map((p, i) => (
                     <div key={p.id} className="results-row">
                         <div className="results-avatar" style={{

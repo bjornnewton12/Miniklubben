@@ -17,6 +17,17 @@ input {
     margin-bottom: 8px;
 }
 
+.error-message {
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background-color: #FDDEDE;
+    color: #C0392B;
+    font-family: var(--font-primary);
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
 .input-group {
     display: flex;
     flex-direction: column;
