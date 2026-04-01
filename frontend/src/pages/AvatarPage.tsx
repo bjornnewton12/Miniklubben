@@ -36,13 +36,13 @@ function RegisterStep2Page() {
         if (username && password) {
             const result = await register(username, password, selectedAvatar!, colorRankingIds)
             if (result.success && result.user && result.token) {
-                saveAuth(result.token, result.user.username, result.user.id, selectedAvatar!, colors[0].hexValue)
+                saveAuth(result.token, result.user.username, result.user.id, selectedAvatar!, colors[0].hexValue, colors.map(c => c.hexValue))
                 navigate('/')
             } else {
                 console.error(result.error)
             }
         } else {
-            updateAvatar(selectedAvatar!, colors[0].hexValue)
+            updateAvatar(selectedAvatar!, colors[0].hexValue, colors.map(c => c.hexValue))
             navigate('/profile')
         }
     }

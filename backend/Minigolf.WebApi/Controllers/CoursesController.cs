@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Minigolf.Application.UseCases.Courses.CreateCourse;
 using Minigolf.Application.UseCases.Courses.GetCourses;
 using Minigolf.Application.UseCases.Courses.GetCoursesById;
 
@@ -11,11 +13,13 @@ public sealed class CoursesController : ControllerBase
 {
     private readonly GetCoursesHandler _getCoursesHandler;
     private readonly GetCoursesByIdHandler _getCoursesByIdHandler;
+    private readonly CreateCourseHandler _createCourseHandler;
 
-    public CoursesController(GetCoursesHandler getCoursesHandler, GetCoursesByIdHandler getCoursesByIdHandler)
+    public CoursesController(GetCoursesHandler getCoursesHandler, GetCoursesByIdHandler getCoursesByIdHandler, CreateCourseHandler createCourseHandler)
     {
         _getCoursesHandler = getCoursesHandler;
         _getCoursesByIdHandler = getCoursesByIdHandler;
+        _createCourseHandler = createCourseHandler;
     }
 
     [HttpGet]
@@ -39,4 +43,15 @@ public sealed class CoursesController : ControllerBase
 
         return NotFound(result.Error);
     }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> CreateCourse([FromBody] CreateCourseCommand cmd)
+    {
+        var result = await _createCourseHandler.HandleAsync(cmd);
+        if (result.Success)
+            return Ok(result);
+        return BadRequest(result.Error);
+    }
+
 }

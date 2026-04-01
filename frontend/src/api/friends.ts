@@ -6,6 +6,7 @@ export interface FriendDto {
     username: string
     avatarId: string
     topColor: string | null
+    colorRankings: Array<{ id: string; name: string; hexValue: string }>
 }
 
 export interface FriendRequestDto {

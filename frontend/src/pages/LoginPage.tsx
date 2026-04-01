@@ -20,8 +20,8 @@ async function handleSubmit(e: React.SyntheticEvent) {
   e.preventDefault()
   const result = await login(username, password)
   if (result.success && result.user && result.token) {
-    saveAuth(result.token, result.user.username, result.user.id, result.user.avatarId, result.user.topColor)
-    navigate('/')
+    saveAuth(result.token, result.user.username, result.user.id, result.user.avatarId, result.user.topColor, result.user.colorRankings.map(c => c.hexValue))
+    navigate('/profile')
   } else {
     setError('Fel användarnamn eller lösenord')
   }

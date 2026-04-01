@@ -26,6 +26,7 @@ using Minigolf.Infrastructure.Data;
 using Minigolf.Infrastructure.Persistance.Repositories;
 using Minigolf.Infrastructure.Services;
 using System.Text;
+using Minigolf.Application.UseCases.Courses.CreateCourse;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,7 @@ builder.Services.AddScoped<RemoveFriendHandler>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<GetCoursesHandler>();
 builder.Services.AddScoped<GetCoursesByIdHandler>();
+builder.Services.AddScoped<CreateCourseHandler>();
 
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<CreateGameHandler>();

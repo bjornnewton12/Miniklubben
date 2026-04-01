@@ -9,16 +9,10 @@ import { getFriends, type FriendDto } from '../api/friends'
 import { AVATARS } from '../constants/avatars'
 import type { Player } from '../context/NewGameContext'
 
-const COLORS = ['#45AC7F', '#FE9377', '#4B69FE', '#F81803', '#F6B859', '#F7A6AD']
-
-function randomColor() {
-    return COLORS[Math.floor(Math.random() * COLORS.length)]
-}
-
 function NewGamePage() {
     const { selectedIds, guests, setSelectedIds, setGuests, setPlayers } = useNewGame()
-    const { userId, username: currentUsername, topColor, avatarId, token } = useAuth()
-    const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b', avatarId: avatarId ?? '' }
+    const { userId, username: currentUsername, topColor, avatarId, token, colorRankings } = useAuth()
+    const currentUser = { id: userId!, username: currentUsername!, color: topColor ?? '#6b6b6b', avatarId: avatarId ?? '', colorRankings }
     const [guestName, setGuestName] = useState('')
     const [friends, setFriends] = useState<FriendDto[]>([])
     const navigate = useNavigate()
@@ -36,8 +30,10 @@ function NewGamePage() {
     useEffect(() => {
         const allPlayers: Player[] = [
             currentUser,
-            ...friends.map(f => ({ id: f.userId, username: f.username, color: f.topColor ?? '#6b6b6b', avatarId: f.avatarId })),
-            ...guests.map(g => ({ ...g, avatarId: 'guest' })),
+            ...friends.map(f => 
+                ({ id: f.userId, username: f.username, color: f.topColor ?? '#6b6b6b', avatarId: f.avatarId
+                    , colorRankings: f.colorRankings.map(c => c.hexValue) })),
+            ...guests.map(g => ({ ...g, avatarId: 'guest', colorRankings: [] })),
         ]
         setPlayers(allPlayers.filter(p => selectedIds.includes(p.id)))
     }, [selectedIds, friends, guests])
@@ -56,7 +52,7 @@ function NewGamePage() {
         if (guestName.trim() === '') return
         if (selectedIds.length >= 5) return
         const id = `guest-${Date.now()}`
-        setGuests([...guests, { id, username: guestName.trim(), color: randomColor(), avatarId: '1' }])
+        setGuests([...guests, { id, username: guestName.trim(), color: '#2C2C2C', avatarId: '1', colorRankings: [] }])
         setSelectedIds([...selectedIds, id])
         setGuestName('')
     }

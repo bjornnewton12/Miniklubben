@@ -6,12 +6,13 @@ interface AuthState {
     userId: string | null
     avatarId: string | null
     topColor: string | null
+    colorRankings: string[]
 }
 
 interface AuthContextType extends AuthState {
-    login: (token: string, username: string, userId: string, avatarId: string, topColor: string) => void
+    login: (token: string, username: string, userId: string, avatarId: string, topColor: string, colorRankings: string[]) => void
     logout: () => void
-    updateAvatar: (avatarId: string, topColor: string) => void
+    updateAvatar: (avatarId: string, topColor: string, colorRankings: string[]) => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -23,15 +24,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userId: localStorage.getItem('userId'),
         avatarId: localStorage.getItem('avatarId'),
         topColor: localStorage.getItem('topColor'),
+        colorRankings: JSON.parse(localStorage.getItem('colorRankings') ?? '[]')
     })
 
-    function login(token: string, username: string, userId: string, avatarId: string, topColor: string) {
+    function login(token: string, username: string, userId: string, avatarId: string, topColor: string, colorRankings: string[]) {
         localStorage.setItem('token', token)
         localStorage.setItem('username', username)
         localStorage.setItem('userId', userId)
         localStorage.setItem('avatarId', avatarId)
         localStorage.setItem('topColor', topColor)
-        setAuth({ token, username, userId, avatarId, topColor })
+        localStorage.setItem('colorRankings', JSON.stringify(colorRankings))
+        setAuth({ token, username, userId, avatarId, topColor, colorRankings })
     }
 
     function logout() {
@@ -40,13 +43,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('userId')
         localStorage.removeItem('avatarId')
         localStorage.removeItem('topColor')
-        setAuth({ token: null, username: null, userId: null, avatarId: null, topColor: null })
+        localStorage.removeItem('colorRankings')
+        setAuth({ token: null, username: null, userId: null, avatarId: null, topColor: null, colorRankings: [] })
     }
 
-    function updateAvatar(avatarId: string, topColor: string) {
+    function updateAvatar(avatarId: string, topColor: string, colorRankings: string[]) {
         localStorage.setItem('avatarId', avatarId)
         localStorage.setItem('topColor', topColor)
-        setAuth(prev => ({ ...prev, avatarId, topColor }))
+        localStorage.setItem('colorRankings', JSON.stringify(colorRankings))
+        setAuth(prev => ({ ...prev, avatarId, topColor, colorRankings }))
     }
 
     return (

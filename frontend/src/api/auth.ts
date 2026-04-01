@@ -7,6 +7,7 @@ interface AuthResponse {
         username: string
         avatarId: string
         topColor: string
+        colorRankings: Array<{ id: string; name: string; hexValue: string }>
     } | null
     token: string | null
     error: string | null

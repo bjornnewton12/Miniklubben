@@ -5,6 +5,7 @@ export interface Player {
     username: string
     color: string
     avatarId: string
+    colorRankings: string[]
 }
 
 interface NewGameState {

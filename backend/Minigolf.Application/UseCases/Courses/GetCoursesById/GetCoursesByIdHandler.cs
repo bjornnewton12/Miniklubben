@@ -15,6 +15,7 @@ public sealed class GetCoursesByIdHandler(ICourseRepository courseRepository)
                         course.Id,
                         course.Name,
                         course.Description,
+                        course.Location,
                         course.ImageUrl,
                         course.MinHoles,
                         course.MaxHoles,
