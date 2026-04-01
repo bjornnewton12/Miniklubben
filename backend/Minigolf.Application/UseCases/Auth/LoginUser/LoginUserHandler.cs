@@ -1,6 +1,5 @@
 ﻿using Minigolf.Application.DTOs;
 using Minigolf.Application.Interfaces;
-using Minigolf.Domain.Models;
 
 namespace Minigolf.Application.UseCases.Auth.LoginUser;
 
@@ -8,7 +7,7 @@ public sealed class LoginUserHandler(IUserRepository userRepository, IJwtService
 {
     public async Task<LoginUserResult> HandleAsync(LoginUserCommand cmd, CancellationToken ct = default)
     {
-        // 1. Find user by username → Fail("Invalid credentials") if not found
+        // Find user by username → Fail("Invalid credentials") if not found
         var user = await userRepository.GetByUsernameAsync(cmd.Username);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(cmd.Password, user.PasswordHash))
@@ -16,16 +15,20 @@ public sealed class LoginUserHandler(IUserRepository userRepository, IJwtService
             return LoginUserResult.Fail("Invalid credentials");
         }
 
-        // 3.Generate token
+        // Generate token
         var token = jwtService.GenerateToken(user);
 
-        var rankings = await userRepository.GetColorRankingsByUserIdsAsync([user.Id]);
-        var topColor = rankings.OrderBy(r => r.Rank).FirstOrDefault()?.Color.HexValue;
+        var rankingDtos = user.ColorRankings
+            .OrderBy(r => r.Rank)
+            .Select(r => new ColorDto(r.Color.Id, r.Color.Name, r.Color.HexValue))
+            .ToList();
 
-        // 4.Map to UserDto
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, [], topColor);
+        var topColor = rankingDtos.FirstOrDefault()?.HexValue;
 
-        // 5.Return Ok
+        // Map to UserDto
+        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, rankingDtos, topColor);
+
+        // Return Ok
         return LoginUserResult.Ok(userDto, token);
     }
 }

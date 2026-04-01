@@ -12,8 +12,15 @@ public sealed class GetFriendsHandler(IFriendshipRepository friendshipRepository
         var dtos = friendships.Select(f =>
         {
             var friend = f.RequesterId == query.UserId ? f.Addressee : f.Requester;
-            var topColor = friend.ColorRankings.OrderBy(r => r.Rank).FirstOrDefault()?.Color.HexValue;
-            return new FriendDto(f.Id, friend.Id, friend.Username, friend.AvatarId, topColor);
+            
+            var rankingDtos = friend.ColorRankings
+                .OrderBy(r => r.Rank)
+                .Select(r => new ColorDto(r.Color.Id, r.Color.Name, r.Color.HexValue))
+                .ToList();
+
+            var topColor = rankingDtos.FirstOrDefault()?.HexValue;
+
+            return new FriendDto(f.Id, friend.Id, friend.Username, friend.AvatarId, topColor, rankingDtos);
         }).ToList();
 
         return GetFriendsResult.Ok(dtos);

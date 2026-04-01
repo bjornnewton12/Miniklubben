@@ -8,5 +8,6 @@ public sealed record FriendDto(
     Guid UserId,
     string Username,
     string AvatarId,
-    string? TopColor
+    string? TopColor,
+    List<ColorDto> ColorRankings
     );

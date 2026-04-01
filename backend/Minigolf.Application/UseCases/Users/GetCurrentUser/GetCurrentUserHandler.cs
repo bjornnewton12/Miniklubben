@@ -11,11 +11,14 @@ public sealed class GetCurrentUserHandler(IUserRepository userRepository)
         if (user == null)
             return GetCurrentUserResult.Fail("User not found");
 
-        var topColor = user.ColorRankings
+        var rankingDtos = user.ColorRankings
             .OrderBy(r => r.Rank)
-            .FirstOrDefault()?.Color.HexValue;
+            .Select(r => new ColorDto(r.Color.Id, r.Color.Name, r.Color.HexValue))
+            .ToList();
 
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, [], topColor);
+        var topColor = rankingDtos.FirstOrDefault()?.HexValue;
+
+        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, rankingDtos, topColor);
 
         return GetCurrentUserResult.Ok(userDto);
     }
