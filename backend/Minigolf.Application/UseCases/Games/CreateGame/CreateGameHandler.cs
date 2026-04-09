@@ -10,8 +10,8 @@ public sealed class CreateGameHandler(
 {
     public async Task<CreateGameResult> HandleAsync(CreateGameCommand cmd)
     {
-        if (cmd.Players.Count < 1 || cmd.Players.Count > 5)
-            return CreateGameResult.Fail("There has to between 1 - 5 players");
+        if (cmd.Players.Count < 1 || cmd.Players.Count > 6)
+            return CreateGameResult.Fail("There has to between 1 - 6 players");
 
         Course course;
 

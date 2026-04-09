@@ -12,7 +12,7 @@ public sealed class GetFriendRequestsHandler(IFriendshipRepository friendshipRep
         var dtos = requests.Select(f =>
         {
             var topColor = f.Requester.ColorRankings.OrderBy(r => r.Rank).FirstOrDefault()?.Color.HexValue;
-            return new FriendRequestDto(f.Id, f.Requester.Id, f.Requester.Username, f.Requester.AvatarId, topColor);
+            return new FriendRequestDto(f.Id, f.Requester.Id, f.Requester.Username, f.Requester.FirstName, f.Requester.Surname, f.Requester.AvatarId, topColor);
         }).ToList();
 
         return GetFriendRequestsResult.Ok(dtos);

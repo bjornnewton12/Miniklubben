@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Minigolf.Application.UseCases.Games.CreateGame;
 using Minigolf.Application.UseCases.Games.GetGameById;
 using Minigolf.Application.UseCases.Games.GetGameResults;
+using Minigolf.Application.UseCases.Games.GetUserGames;
 using Minigolf.Application.UseCases.Games.SubmitScores;
 using Minigolf.WebApi.Contracts.Games;
 
@@ -17,13 +18,15 @@ public sealed class GamesController : ControllerBase
     private readonly GetGameByIdHandler _getGameByIdHandler;
     private readonly GetGameResultHandler _getGameResultHandler;
     private readonly SubmitScoresHandler _submitScoresHandler;
+    private readonly GetUserGamesHandler _getUserGamesHandler;
 
-    public GamesController(CreateGameHandler createGameHandler, GetGameByIdHandler getGameByIdHandler, GetGameResultHandler getGameResultHandler, SubmitScoresHandler submitScoresHandler)
+    public GamesController(CreateGameHandler createGameHandler, GetGameByIdHandler getGameByIdHandler, GetGameResultHandler getGameResultHandler, SubmitScoresHandler submitScoresHandler, GetUserGamesHandler getUserGamesHandler)
     {
         _createGameHandler = createGameHandler;
         _getGameByIdHandler = getGameByIdHandler;
         _getGameResultHandler = getGameResultHandler;
         _submitScoresHandler = submitScoresHandler;
+        _getUserGamesHandler = getUserGamesHandler;
     }
 
     [HttpPost]
@@ -86,5 +89,20 @@ public sealed class GamesController : ControllerBase
             return Ok(result);
 
         return NotFound(result.Error);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUserGames()
+    {
+        var userIdString =
+    User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userIdString == null || !Guid.TryParse(userIdString, out var userId))
+            return Unauthorized();
+
+        var result = await _getUserGamesHandler.HandleAsync(new GetUserGamesQuery(userId));
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result.Error);
     }
 }

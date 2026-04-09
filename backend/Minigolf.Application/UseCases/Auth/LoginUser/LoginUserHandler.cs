@@ -26,7 +26,7 @@ public sealed class LoginUserHandler(IUserRepository userRepository, IJwtService
         var topColor = rankingDtos.FirstOrDefault()?.HexValue;
 
         // Map to UserDto
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, rankingDtos, topColor);
+        var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.Surname, user.AvatarId, user.CreatedAt, rankingDtos, topColor);
 
         // Return Ok
         return LoginUserResult.Ok(userDto, token);

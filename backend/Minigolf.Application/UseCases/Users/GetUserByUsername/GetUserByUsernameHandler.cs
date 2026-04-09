@@ -14,7 +14,7 @@ public sealed class GetUserByUsernameHandler(IUserRepository userRepository)
             .OrderBy(r => r.Rank)
             .FirstOrDefault()?.Color.HexValue;
 
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, [], topColor);
+        var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.Surname, user.AvatarId, user.CreatedAt, [], topColor);
 
         return GetUserByUsernameResult.Ok(userDto);
     }

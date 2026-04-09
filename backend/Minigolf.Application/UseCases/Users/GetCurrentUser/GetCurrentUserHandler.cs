@@ -18,7 +18,7 @@ public sealed class GetCurrentUserHandler(IUserRepository userRepository)
 
         var topColor = rankingDtos.FirstOrDefault()?.HexValue;
 
-        var userDto = new UserDto(user.Id, user.Username, user.AvatarId, user.CreatedAt, rankingDtos, topColor);
+        var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.Surname, user.AvatarId, user.CreatedAt, rankingDtos, topColor);
 
         return GetCurrentUserResult.Ok(userDto);
     }

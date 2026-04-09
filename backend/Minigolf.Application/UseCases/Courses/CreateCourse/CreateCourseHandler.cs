@@ -23,10 +23,15 @@ public sealed class CreateCourseHandler(ICourseRepository courseRepository)
         if (!ValidLocations.Contains(cmd.Location))
             return CreateCourseResult.Fail("Invalid location");
 
+        if (cmd.NumberOfHoles < 1)
+            return CreateCourseResult.Fail("Number of holes must be at least 1");
+
         var course = new Course
         {
             Name = cmd.Name.Trim(),
-            Location = cmd.Location
+            Location = cmd.Location,
+            MinHoles = cmd.NumberOfHoles,
+            MaxHoles = cmd.NumberOfHoles
         };
 
         var saved = await courseRepository.CreateAsync(course);

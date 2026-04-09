@@ -6,6 +6,8 @@
 public sealed record UserDto(
     Guid Id,
     string Username,
+    string FirstName,
+    string Surname,
     string AvatarId,
     DateTime CreatedAt,
     List<ColorDto> ColorRankings,

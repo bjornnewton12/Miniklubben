@@ -25,7 +25,7 @@ public sealed class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var command = new RegisterUserCommand(request.Username, request.Password, request.AvatarId, request.ColorRankingIds);
+        var command = new RegisterUserCommand(request.Username, request.FirstName, request.Surname, request.Password, request.AvatarId, request.ColorRankingIds);
         var result = await _registerHandler.HandleAsync(command);
 
         if (result.Success)

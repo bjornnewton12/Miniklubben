@@ -10,7 +10,7 @@ public sealed class CourseRepository(AppDbContext db) : ICourseRepository
 
     public async Task<List<Course>> GetAllAsync()
     {
-        return await db.Courses.ToListAsync();
+        return await db.Courses.Include(c => c.Holes).ToListAsync();
     }
 
     public async Task<Course?> GetByIdAsync(Guid id)

@@ -19,6 +19,8 @@ public sealed class RegisterUserHandler (IUserRepository userRepository, IJwtSer
         var user = new User
         {
             Username = cmd.Username,
+            FirstName = cmd.FirstName,
+            Surname = cmd.Surname,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(cmd.Password),
             AvatarId = cmd.AvatarId
         };
@@ -28,7 +30,7 @@ public sealed class RegisterUserHandler (IUserRepository userRepository, IJwtSer
         await userRepository.SaveColorRankingsAsync(savedUser.Id, cmd.ColorRankingIds);
         var token = jwtService.GenerateToken(savedUser);
 
-        var userDto = new UserDto(savedUser.Id, savedUser.Username, savedUser.AvatarId, savedUser.CreatedAt, [], null);
+        var userDto = new UserDto(savedUser.Id, savedUser.Username, savedUser.FirstName, savedUser.Surname, savedUser.AvatarId, savedUser.CreatedAt, [], null);
 
         return RegisterUserResult.Ok(userDto, token);
     }

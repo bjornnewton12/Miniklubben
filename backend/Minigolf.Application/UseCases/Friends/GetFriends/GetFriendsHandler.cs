@@ -20,7 +20,7 @@ public sealed class GetFriendsHandler(IFriendshipRepository friendshipRepository
 
             var topColor = rankingDtos.FirstOrDefault()?.HexValue;
 
-            return new FriendDto(f.Id, friend.Id, friend.Username, friend.AvatarId, topColor, rankingDtos);
+            return new FriendDto(f.Id, friend.Id, friend.Username, friend.FirstName, friend.Surname, friend.AvatarId, topColor, rankingDtos);
         }).ToList();
 
         return GetFriendsResult.Ok(dtos);

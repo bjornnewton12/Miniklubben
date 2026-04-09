@@ -30,4 +30,17 @@ public sealed class GameRepository(AppDbContext db) : IGameRepository
     { 
         await db.SaveChangesAsync();
     }
+
+    public async Task<List<Game>> GetByUserIdAsync(Guid userId)
+    {
+        return await db.Games
+            .Include(g => g.Course)
+            .Include(g => g.Players)
+                .ThenInclude(p => p.AssignedColor)
+            .Include(g => g.Players)
+                .ThenInclude(p => p.User)
+            .Where(g => g.Status == "completed" && g.Players.Any(p => p.UserId == userId))
+            .OrderByDescending(g => g.CompletedAt)
+            .ToListAsync();
+    }
 }

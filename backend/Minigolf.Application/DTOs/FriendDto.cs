@@ -7,6 +7,8 @@ public sealed record FriendDto(
     Guid FriendshipId,
     Guid UserId,
     string Username,
+    string FirstName,
+    string Surname,
     string AvatarId,
     string? TopColor,
     List<ColorDto> ColorRankings

@@ -27,6 +27,7 @@ using Minigolf.Infrastructure.Persistance.Repositories;
 using Minigolf.Infrastructure.Services;
 using System.Text;
 using Minigolf.Application.UseCases.Courses.CreateCourse;
+using Minigolf.Application.UseCases.Games.GetUserGames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,7 @@ builder.Services.AddScoped<CreateGameHandler>();
 builder.Services.AddScoped<GetGameByIdHandler>();
 builder.Services.AddScoped<SubmitScoresHandler>();
 builder.Services.AddScoped<GetGameResultHandler>();
+builder.Services.AddScoped<GetUserGamesHandler>();
 
 builder.Services.AddScoped<DeleteUserHandler>();
 builder.Services.AddScoped<DeleteCourseHandler>();

@@ -2,5 +2,6 @@
 
 public sealed record CreateCourseCommand(
     string Name,
-    string Location
+    string Location,
+    int NumberOfHoles
     );
