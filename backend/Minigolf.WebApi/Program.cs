@@ -22,6 +22,7 @@ using Minigolf.Application.UseCases.Users.GetColors;
 using Minigolf.Application.UseCases.Users.GetCurrentUser;
 using Minigolf.Application.UseCases.Users.GetUserByUsername;
 using Minigolf.Application.UseCases.Users.UpdateColorRankings;
+using Minigolf.Application.UseCases.Users.UpdateUserProfile;
 using Minigolf.Infrastructure.Data;
 using Minigolf.Infrastructure.Persistance.Repositories;
 using Minigolf.Infrastructure.Services;
@@ -81,6 +82,7 @@ builder.Services.AddScoped<DeleteCourseHandler>();
 builder.Services.AddScoped<IColorRepository, ColorRepository>();
 builder.Services.AddScoped<GetColorsHandler>();
 builder.Services.AddScoped<UpdateColorRankingsHandler>();
+builder.Services.AddScoped<UpdateUserProfileHandler>();
 
 builder.Services.AddAuthorization(options =>
 {

@@ -37,10 +37,15 @@ public sealed class SubmitScoresHandler(IGameRepository gameRepository)
         foreach (var player in game.Players)
             player.FinalScore = player.Scores.Sum(s => s.Strokes);
 
-        // Rankings
+        // Rankings (tied scores get the same rank)
         var ranked = game.Players.OrderBy(p => p.FinalScore).ToList();
         for (int i = 0; i < ranked.Count; i++)
-            ranked[i].Rank = i + 1;
+        {
+            int rank = i + 1;
+            if (i > 0 && ranked[i].FinalScore == ranked[i - 1].FinalScore)
+                rank = ranked[i - 1].Rank!.Value;
+            ranked[i].Rank = rank;
+        }
 
         // Complete game
         game.Status = "completed";

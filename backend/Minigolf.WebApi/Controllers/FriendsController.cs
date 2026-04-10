@@ -46,6 +46,17 @@ public sealed class FriendsController : ControllerBase
         return NotFound(result.Error);
     }
 
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetFriendsByUserId(Guid userId)
+    {
+        var result = await _getFriendsHandler.HandleAsync(new GetFriendsQuery(userId));
+
+        if (result.Success)
+            return Ok(result);
+
+        return NotFound(result.Error);
+    }
+
     [HttpGet("requests")]
     public async Task<IActionResult> GetFriendRequests()
     {

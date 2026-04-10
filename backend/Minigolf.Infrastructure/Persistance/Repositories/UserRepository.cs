@@ -51,6 +51,12 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
         await db.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(User user)
+    {
+        db.Users.Update(user);
+        await db.SaveChangesAsync();
+    }
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         var user = await db.Users.FindAsync(id);

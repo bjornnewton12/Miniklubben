@@ -19,6 +19,8 @@ public sealed class GetUserGamesHandler(IGameRepository gameRepository)
                 .OrderBy(p => p.Rank)
                 .Select(p => new UserGamePlayerDto(
                     p.User?.FirstName ?? p.GuestName ?? "Okänd",
+                    p.User?.FirstName ?? p.GuestName ?? "Okänd",
+                    p.User?.Surname ?? "",
                     p.User?.AvatarId ?? "guest",
                     p.AssignedColor?.HexValue,
                     p.FinalScore,

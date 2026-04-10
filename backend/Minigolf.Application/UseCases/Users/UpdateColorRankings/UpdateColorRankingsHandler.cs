@@ -9,8 +9,8 @@ public sealed class UpdateColorRankingsHandler(IUserRepository userRepository, I
         var allColors = await colorRepository.GetAllAsync();
         var validColorIds = allColors.Select(c => c.Id).ToHashSet();
 
-        if (cmd.ColorIds.Count != allColors.Count || cmd.ColorIds.Any(id => !validColorIds.Contains(id)))
-            return UpdateColorRankingsResult.Fail("Invalid color rankings — must include every color exactly once");
+        if (cmd.ColorIds.Count != 6 || cmd.ColorIds.Distinct().Count() != 6 || cmd.ColorIds.Any(id => !validColorIds.Contains(id)))
+            return UpdateColorRankingsResult.Fail("Invalid color rankings — must include exactly 6 distinct valid colors");
 
         await userRepository.SaveColorRankingsAsync(cmd.UserId, cmd.ColorIds);
         return UpdateColorRankingsResult.Ok();
