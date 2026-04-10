@@ -19,14 +19,14 @@ function ResultsPage() {
             <div className="h3">Resultat</div>
             <div className="h1">{courseName ?? 'Bana'}</div>
             <div className="card card--full">
-                {ranked.map((p, i) => (
+                {ranked.map((p) => (
                     <div key={p.id} className="results-row">
                         <div className="results-avatar" style={{ backgroundColor: p.color }}>
                                 {(() => { const av = AVATARS.find(a => a.id === p.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
                             </div>
                         <div>
-                            <div className="h3Result">Plats {i + 1} med {(p.total)} poäng</div>
-                            <div className="h2Result">{p.username}</div>
+                            <div className="result-label">Plats {ranked.findIndex(r => r.total === p.total) + 1} med {(p.total)} poäng</div>
+                            <div className="h2Result">{p.firstName} {p.surname}</div>
                         </div>
                     </div>
                 ))}

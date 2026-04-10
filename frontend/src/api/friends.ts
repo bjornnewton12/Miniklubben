@@ -4,6 +4,8 @@ export interface FriendDto {
     friendshipId: string
     userId: string
     username: string
+    firstName: string
+    surname: string
     avatarId: string
     topColor: string | null
     colorRankings: Array<{ id: string; name: string; hexValue: string }>
@@ -13,6 +15,8 @@ export interface FriendRequestDto {
     friendshipId: string
     requesterId: string
     username: string
+    firstName: string
+    surname: string
     avatarId: string
     topColor: string | null
 }
@@ -23,12 +27,14 @@ function authHeaders(token: string) {
 
 export async function getFriends(token: string): Promise<FriendDto[]> {
     const res = await fetch(`${BASE_URL}/api/friends`, { headers: authHeaders(token) })
+    if (!res.ok) return []
     const data = await res.json()
     return data.friends ?? []
 }
 
 export async function getFriendRequests(token: string): Promise<FriendRequestDto[]> {
     const res = await fetch(`${BASE_URL}/api/friends/requests`, { headers: authHeaders(token) })
+    if (!res.ok) return []
     const data = await res.json()
     return data.requests ?? []
 }
@@ -48,6 +54,13 @@ export async function acceptFriendRequest(token: string, friendshipId: string): 
         headers: authHeaders(token),
     })
     return res.ok
+}
+
+export async function getFriendsFriends(token: string, userId: string): Promise<FriendDto[]> {
+    const res = await fetch(`${BASE_URL}/api/friends/user/${userId}`, { headers: authHeaders(token) })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.friends ?? []
 }
 
 export async function removeFriend(token: string, friendshipId: string): Promise<boolean> {

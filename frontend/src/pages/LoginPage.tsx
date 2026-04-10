@@ -18,22 +18,26 @@ function LoginPage() {
 
 async function handleSubmit(e: React.SyntheticEvent) {
   e.preventDefault()
-  const result = await login(username, password)
-  if (result.success && result.user && result.token) {
-    saveAuth(result.token, result.user.username, result.user.id, result.user.avatarId, result.user.topColor, result.user.colorRankings.map(c => c.hexValue))
-    navigate('/profile')
-  } else {
-    setError('Fel användarnamn eller lösenord')
+  try {
+    const result = await login(username, password)
+    if (result.success && result.user && result.token) {
+      saveAuth(result.token, result.user.username, result.user.firstName, result.user.surname, result.user.id, result.user.avatarId, result.user.topColor, result.user.colorRankings.map(c => c.hexValue))
+      navigate('/profile')
+    } else {
+      setError('Fel användarnamn eller lösenord')
+    }
+  } catch {
+    setError('Något gick fel, försök igen')
   }
 }
 
   return (
-    <div className="page">
+    <div className="page page--centered">
       <H1>Minigolf</H1>
       <Card>
         <form onSubmit={handleSubmit} className="form">
           <Input label="Användarnamn" value={username} onChange={setUsername} />
-          <Input label="Lösenord" type="password" value={password} onChange={setPassword} />
+          <Input label="Lösenord" type="password" value={password} onChange={setPassword} showToggle />
           <ErrorMessage message={error} />
           <Button type="submit" disabled={!isFormFilled}>Logga in</Button>
           <Button variant="ghost" onClick={() => navigate('/register')}>

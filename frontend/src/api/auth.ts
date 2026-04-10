@@ -5,6 +5,8 @@ interface AuthResponse {
     user: {
         id: string
         username: string
+        firstName: string
+        surname: string
         avatarId: string
         topColor: string
         colorRankings: Array<{ id: string; name: string; hexValue: string }>
@@ -23,11 +25,14 @@ export async function login(
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
         })
+    if (!res.ok) return { success: false, user: null, token: null, error: 'Fel användarnamn eller lösenord' }
     return res.json()
 }
 
 export async function register(
     username: string,
+    firstName: string,
+    surname: string,
     password: string,
     avatarId: string,
     colorRankingIds: string[]
@@ -35,7 +40,7 @@ export async function register(
     const res = await fetch(`${BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, avatarId, colorRankingIds }),
+        body: JSON.stringify({ username, firstName, surname, password, avatarId, colorRankingIds }),
     })
     if (!res.ok) {
         const error = await res.text()
@@ -46,6 +51,7 @@ export async function register(
 
 export async function checkUsername(username: string): Promise<boolean> {
     const res = await fetch(`${BASE_URL}/api/auth/check-username/${username}`)
+    if (!res.ok) return false
     const data = await res.json()
     return data.exists
 }

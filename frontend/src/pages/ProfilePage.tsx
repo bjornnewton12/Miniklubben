@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { H1, H2, Label } from '../components/typography/Typography'
+import { H1, H2, H3, Label } from '../components/typography/Typography'
+import editIcon from '../assets/icons/icon_edit.svg'
 import Button from '../components/common/Button'
 import Input from '../components/common/Input'
 import ErrorMessage from '../components/common/ErrorMessage'
@@ -10,7 +11,7 @@ import { getFriends, getFriendRequests, acceptFriendRequest, removeFriend, sendF
 import { getUserByUsername } from '../api/users'
 
 function ProfilePage() {
-    const { username, avatarId, topColor, token, logout } = useAuth()
+    const { username, firstName, surname, avatarId, topColor, token, logout } = useAuth()
     const navigate = useNavigate()
     const [friends, setFriends] = useState<FriendDto[]>([])
     const [requests, setRequests] = useState<FriendRequestDto[]>([])
@@ -30,7 +31,7 @@ function ProfilePage() {
         if (!token) return
         await acceptFriendRequest(token, friendshipId)
         const accepted = requests.find(r => r.friendshipId === friendshipId)!
-        setFriends(prev => [...prev, { friendshipId: accepted.friendshipId, userId: accepted.requesterId, username: accepted.username, avatarId: accepted.avatarId, topColor: accepted.topColor }])
+        setFriends(prev => [...prev, { friendshipId: accepted.friendshipId, userId: accepted.requesterId, username: accepted.username, firstName: accepted.firstName, surname: accepted.surname, avatarId: accepted.avatarId, topColor: accepted.topColor, colorRankings: [] }])
         setRequests(prev => prev.filter(r => r.friendshipId !== friendshipId))
     }
 
@@ -60,12 +61,16 @@ function ProfilePage() {
     return (
         <div className="page">
             <H1>Profil</H1>
-            <div className="profile-avatar-wrapper" onClick={() => navigate('/avatar')} style={{ cursor: 'pointer' }}>
-                {avatar
-                    ? <img src={avatar.src} className="profile-avatar" alt="Avatar" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
-                    : <div className="profile-avatar profile-avatar--placeholder" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
-                }
-                <strong>{username}</strong>
+            <div className="profile-avatar-wrapper" onClick={() => navigate('/edit-profile')} style={{ cursor: 'pointer' }}>
+                <div className="profile-avatar-container">
+                    {avatar
+                        ? <img src={avatar.src} className="profile-avatar" alt="Avatar" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
+                        : <div className="profile-avatar profile-avatar--placeholder" style={{ backgroundColor: topColor ?? '#d1d5db' }} />
+                    }
+                    <img src={editIcon} className="profile-avatar-edit" alt="" />
+                </div>
+                <H3>{firstName} {surname}</H3>
+                <Label>{username}</Label>
             </div>
 
             {requests.length > 0 && (
@@ -77,7 +82,7 @@ function ProfilePage() {
                                 {(() => { const av = AVATARS.find(a => a.id === r.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
                             </div>
                             <div>
-                                <div className="h2Result">{r.username}</div>
+                                <div className="h3Left">{r.firstName} {r.surname}</div>
                                 <div className="friend-request-actions">
                                     <button className="friend-request-btn" onClick={() => handleAccept(r.friendshipId)}>Godkänn</button>
                                     <button className="friend-request-btn" onClick={() => handleRemoveRequest(r.friendshipId)}>Ta bort</button>
@@ -88,19 +93,19 @@ function ProfilePage() {
                 </div>
             )}
 
-            <div className="card card--full">
+            {friends.length > 0 && <div className="card card--full">
                 <H2>Dina vänner</H2>
                 <div className="player-grid">
                     {friends.map(f => (
-                        <div key={f.friendshipId} className="player-item">
+                        <div key={f.friendshipId} className="player-item" onClick={() => navigate(`/friend/${f.userId}`, { state: f })}>
                             <div className="player-circle" style={{ backgroundColor: f.topColor ?? '#d1d5db' }}>
                                 {(() => { const av = AVATARS.find(a => a.id === f.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
                             </div>
-                            <Label>{f.username}</Label>
+                            <Label>{f.firstName} {f.surname}</Label>
                         </div>
                     ))}
                 </div>
-            </div>
+            </div>}
 
             <div className="card card--full">
                 <H2>Lägg till vänner</H2>

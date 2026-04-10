@@ -1,5 +1,5 @@
 .card {
-    background-color: #FDF7EB;
+    background-color: #2D2D2D;
     border-radius: 16px;
     padding: 24px;
     width: 100%;
@@ -11,6 +11,24 @@
 }
 
 .card--full {
+    max-width: 100%;
+    align-items: center;
+    gap: 8px;
+}
+
+.summarycard {
+    background-color: white;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.summarycard--full {
     max-width: 100%;
     align-items: center;
     gap: 8px;

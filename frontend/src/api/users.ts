@@ -15,3 +15,21 @@ export async function getUserByUsername(token: string, username: string): Promis
     const data = await res.json()
     return data.user ?? null
 }
+
+export async function updateUserProfile(token: string, firstName: string, surname: string, avatarId: string): Promise<boolean> {
+    const res = await fetch(`${BASE_URL}/api/users/me/profile`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, surname, avatarId })
+    })
+    return res.ok
+}
+
+export async function updateColorRankings(token: string, colorIds: string[]): Promise<boolean> {
+    const res = await fetch(`${BASE_URL}/api/users/me/color-rankings`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ colorIds })
+    })
+    return res.ok
+}

@@ -12,11 +12,28 @@
     padding-bottom: 320px;
 }
 
+.page--centered {
+    justify-content: center;
+}
+
 .profile-avatar-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
+}
+
+.profile-avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-avatar-edit {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 32px;
+    height: 32px;
 }
 
 .profile-avatar {
@@ -35,4 +52,59 @@
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.animation-card {
+    padding: 16px;
+}
+
+.animation-rows {
+    position: relative;
+    width: 100%;
+}
+
+.animation-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 52px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.animation-name {
+    width: 68px;
+    font-family: var(--font-primary);
+    font-size: 14px;
+    color: white;
+    font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.animation-bar-track {
+    flex: 1;
+    height: 34px;
+}
+
+.animation-bar {
+    height: 100%;
+    border-radius: 6px;
+    width: 0;
+}
+
+.animation-score {
+    width: 30px;
+    font-family: var(--font-primary);
+    font-size: 14px;
+    color: white;
+    font-weight: 500;
+    text-align: right;
+    flex-shrink: 0;
 }

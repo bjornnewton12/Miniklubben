@@ -4,7 +4,7 @@
       left: 0;
       right: 0;
       z-index: 100;
-      background-color: #FDF7EB;
+      background-color: #2D2D2D;
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
@@ -20,7 +20,7 @@
       cursor: pointer;
       padding: 0;
       border-radius: 0;
-      color: black;
+      color: white;
       margin: 0;
       width: auto;
   }
@@ -31,7 +31,7 @@
   }
 
   .bottom-nav__label, .bottom-nav__label--active {
-      font-family: Arial, sans-serif;
+      font-family: 'Figtree', sans-serif;
       font-size: 12px;
-      color: black;
+      color: white;
   }

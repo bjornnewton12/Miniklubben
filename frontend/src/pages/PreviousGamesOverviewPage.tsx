@@ -1,58 +1,47 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { H1 } from '../components/typography/Typography'
-import Card from '../components/common/Card'
-
-const DUMMY_GAMES = [
-    {
-        id: '1',
-        courseName: 'Aspuddens Bangolf',
-        date: '31/03-2026',
-        players: [
-            { id: 'p1', username: 'DetÄrJag', color: '#45AC7F', total: 47 },
-            { id: 'p2', username: 'Agnes', color: '#FE9377', total: 51 },
-            { id: 'p3', username: 'Bo', color: '#4B69FE', total: 54 },
-        ]
-    },
-    {
-        id: '2',
-        courseName: 'Liseberg',
-        date: '28/03-2026',
-        players: [
-            { id: 'p1', username: 'DetÄrJag', color: '#45AC7F', total: 39 },
-            { id: 'p4', username: 'Cecilia', color: '#F6B859', total: 42 },
-        ]
-    },
-    {
-        id: '3',
-        courseName: 'Slottsskogen',
-        date: '20/03-2026',
-        players: [
-            { id: 'p1', username: 'DetÄrJag', color: '#45AC7F', total: 55 },
-            { id: 'p2', username: 'Agnes', color: '#FE9377', total: 48 },
-            { id: 'p5', username: 'Dawit', color: '#F81803', total: 61 },
-            { id: 'p6', username: 'Erica', color: '#4B69FE', total: 44 },
-        ]
-    },
-]
+import { useAuth } from '../context/AuthContext'
+import { getUserGames, type UserGameSummary } from '../api/games'
+import { useNotifications } from '../context/NotificationContext'
 
 function PreviousGamesPage() {
+    const { token } = useAuth()
     const navigate = useNavigate()
+    const [games, setGames] = useState<UserGameSummary[]>([])
+    const { markGamesSeen } = useNotifications()
+
+    useEffect(() => {
+        markGamesSeen()
+        if (token) getUserGames(token).then(setGames)
+    }, [token])
+
+    function formatDate(dateStr: string | null) {
+        if (!dateStr) return '—'
+        const d = new Date(dateStr)
+        return `${d.getDate()}/${d.getMonth() + 1}-${d.getFullYear()}`
+    }
 
     return (
         <div className="page">
             <H1>Tidigare spel</H1>
-            <Card>
-            <div className="course-grid">
-                {DUMMY_GAMES.map(game => (
-                    <div key={game.id} className="course-item" onClick={() =>
-                        navigate(`/previous-games/${game.id}`, { state: { game } })}>
-                        <div className="course-thumbnail" />
-                        <span className="player-label">{game.courseName}</span>
-                        <span className="player-label">{game.date}</span>
-                    </div>
-                ))}
+            <div className='card card--full'>
+                {games.length === 0 && (
+                    <p className="paragraph">När du spelat en omgång dyker den upp här</p>
+                )}
+                <div className="course-grid">
+                    {games.map(game => (
+                        <div key={game.id} className="course-item" onClick={() =>
+                            navigate(`/previous-games/${game.id}`, { state: { game } })}>
+                            <div className="course-thumbnail">
+                                {game.courseImageUrl && <img src={game.courseImageUrl} alt={game.courseName} />}
+                            </div>
+                            <span className="label"><strong>{game.courseName}</strong></span>
+                            <span className="label">{formatDate(game.completedAt)}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
-            </Card>
         </div>
     )
 }

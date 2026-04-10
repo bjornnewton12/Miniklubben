@@ -23,3 +23,57 @@
     align-items: center;
     justify-content: center;
 }
+
+.course-thumbnail img:not(.course-checkmark) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+  }
+
+.course-checkmark {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 24px;
+    height: 24px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.location-section {
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.location-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    text-align: left;
+}
+
+.location-header:focus,
+.location-header:active {
+    color: white;
+    outline: none;
+}
+
+.location-header .h3 {
+    color: white;
+}
+
+.add-course-form {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}

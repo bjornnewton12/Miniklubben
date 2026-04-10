@@ -1,44 +1,78 @@
 :root {
-    --font-primary: Arial, sans-serif;
+    --font-primary: 'Figtree', sans-serif;
 }
 
 .h1 {
     font-family: var(--font-primary);
-    font-weight: 900;
-    font-size: 1.875rem;
+    color: white;
+    font-weight: 700;
+    font-size: 1.8rem;
     text-align: center;
 }
 
 .h2 {
     font-family: var(--font-primary);
-    font-weight: 900;
+    color: white;
+    font-weight: 700;
     font-size: 1.5rem;
     text-align: center;
 }
 
 .h2Result {
     font-family: var(--font-primary);
-    font-weight: 900;
+    color: white;
+    font-weight: 700;
     font-size: 1.5rem;
     text-align: left;
 }
 
 .h3 {
     font-family: var(--font-primary);
-    font-weight: 400;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    color: white;
+}
+
+.h3Left {
+    font-family: var(--font-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: left;
+}
+
+.paragraph {
+    font-family: var(--font-primary);
+    color: white;
+    font-weight: 500;
     font-size: 1rem;
     text-align: center;
 }
 
-.h3Result {
+.input-label {
     font-family: var(--font-primary);
-    font-weight: 400;
+    color: white;
+    font-weight: 300;
     font-size: 1rem;
     text-align: left;
+    margin-top: 16px;
+    margin-bottom: 10px;
 }
 
 .label {
     font-family: var(--font-primary);
-    font-weight: 400;
-    font-size: 0.875rem;
+    color: white;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.result-label {
+    font-family: var(--font-primary);
+    color: white;
+    font-weight: 300;
+    font-size: 1rem;
+    text-align: left;
 }

@@ -2,7 +2,8 @@ import { createContext, useContext, useState } from 'react'
 
 export interface Player {
     id: string
-    username: string
+    firstName: string
+    surname: string
     color: string
     avatarId: string
     colorRankings: string[]
@@ -14,7 +15,10 @@ interface NewGameState {
     players: Player[]
     courseId: string | null
     courseName: string | null
+    courseImageUrl: string | null
     holes: number | null
+    gameId: string | null
+    gamePlayerMap: Record<string, string>
 }
 
 interface NewGameContextType extends NewGameState {
@@ -23,7 +27,10 @@ interface NewGameContextType extends NewGameState {
     setPlayers: (players: Player[]) => void
     setCourseId: (id: string | null) => void
     setCourseName: (name: string | null) => void
+    setCourseImageUrl: (url: string | null) => void
     setHoles: (holes: number | null) => void
+    setGameId: (id: string | null) => void
+    setGamePlayerMap: (map: Record<string, string>) => void
     reset: () => void
 }
 
@@ -33,7 +40,10 @@ const defaultState: NewGameState = {
     players: [],
     courseId: null,
     courseName: null,
+    courseImageUrl: null,
     holes: null,
+    gameId: null,
+    gamePlayerMap: {},
 }
 
 const NewGameContext = createContext<NewGameContextType | null>(null)
@@ -61,8 +71,20 @@ export function NewGameProvider({ children }: { children: React.ReactNode }) {
         setState(prev => ({ ...prev, courseName }))
     }
 
+    function setCourseImageUrl(courseImageUrl: string | null) {
+        setState(prev => ({ ...prev, courseImageUrl }))
+    }
+
     function setHoles(holes: number | null) {
         setState(prev => ({ ...prev, holes }))
+    }
+
+    function setGameId(gameId: string | null) {
+        setState(prev => ({ ...prev, gameId }))
+    }
+
+    function setGamePlayerMap(gamePlayerMap: Record<string, string>) {
+        setState(prev => ({ ...prev, gamePlayerMap }))
     }
 
     function reset() {
@@ -70,7 +92,7 @@ export function NewGameProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <NewGameContext.Provider value={{ ...state, setSelectedIds, setGuests, setPlayers, setCourseId, setCourseName, setHoles, reset }}>
+        <NewGameContext.Provider value={{ ...state, setSelectedIds, setGuests, setPlayers, setCourseId, setCourseName, setCourseImageUrl, setHoles, setGameId, setGamePlayerMap, reset }}>
             {children}
         </NewGameContext.Provider>
     )

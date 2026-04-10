@@ -1,8 +1,10 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 interface AuthState {
     token: string | null
     username: string | null
+    firstName: string | null
+    surname: string | null
     userId: string | null
     avatarId: string | null
     topColor: string | null
@@ -10,9 +12,10 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-    login: (token: string, username: string, userId: string, avatarId: string, topColor: string, colorRankings: string[]) => void
+    login: (token: string, username: string, firstName: string, surname: string, userId: string, avatarId: string, topColor: string, colorRankings: string[]) => void
     logout: () => void
     updateAvatar: (avatarId: string, topColor: string, colorRankings: string[]) => void
+    updateProfile: (firstName: string, surname: string, avatarId: string, topColor: string, colorRankings: string[]) => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -21,30 +24,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [auth, setAuth] = useState<AuthState>({
         token: localStorage.getItem('token'),
         username: localStorage.getItem('username'),
+        firstName: localStorage.getItem('firstName'),
+        surname: localStorage.getItem('surname'),
         userId: localStorage.getItem('userId'),
         avatarId: localStorage.getItem('avatarId'),
         topColor: localStorage.getItem('topColor'),
         colorRankings: JSON.parse(localStorage.getItem('colorRankings') ?? '[]')
     })
 
-    function login(token: string, username: string, userId: string, avatarId: string, topColor: string, colorRankings: string[]) {
+    useEffect(() => {
+        document.documentElement.style.setProperty('--button-color', auth.topColor ?? '#45AC7F')
+    }, [auth.topColor])
+
+    function login(token: string, username: string, firstName: string, surname: string, userId: string, avatarId: string, topColor: string, colorRankings: string[]) {
         localStorage.setItem('token', token)
         localStorage.setItem('username', username)
+        localStorage.setItem('firstName', firstName)
+        localStorage.setItem('surname', surname)
         localStorage.setItem('userId', userId)
         localStorage.setItem('avatarId', avatarId)
         localStorage.setItem('topColor', topColor)
         localStorage.setItem('colorRankings', JSON.stringify(colorRankings))
-        setAuth({ token, username, userId, avatarId, topColor, colorRankings })
+        setAuth({ token, username, firstName, surname, userId, avatarId, topColor, colorRankings })
     }
 
     function logout() {
         localStorage.removeItem('token')
         localStorage.removeItem('username')
+        localStorage.removeItem('firstName')
+        localStorage.removeItem('surname')
         localStorage.removeItem('userId')
         localStorage.removeItem('avatarId')
         localStorage.removeItem('topColor')
         localStorage.removeItem('colorRankings')
-        setAuth({ token: null, username: null, userId: null, avatarId: null, topColor: null, colorRankings: [] })
+        setAuth({ token: null, username: null, firstName: null, surname: null, userId: null, avatarId: null, topColor: null, colorRankings: [] })
     }
 
     function updateAvatar(avatarId: string, topColor: string, colorRankings: string[]) {
@@ -54,8 +67,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAuth(prev => ({ ...prev, avatarId, topColor, colorRankings }))
     }
 
+    function updateProfile(firstName: string, surname: string, avatarId: string, topColor: string, colorRankings: string[]) {
+        localStorage.setItem('firstName', firstName)
+        localStorage.setItem('surname', surname)
+        localStorage.setItem('avatarId', avatarId)
+        localStorage.setItem('topColor', topColor)
+        localStorage.setItem('colorRankings', JSON.stringify(colorRankings))
+        setAuth(prev => ({ ...prev, firstName, surname, avatarId, topColor, colorRankings }))
+    }
+
     return (
-        <AuthContext.Provider value={{ ...auth, login, updateAvatar, logout }}>
+        <AuthContext.Provider value={{ ...auth, login, updateAvatar, updateProfile, logout }}>
             {children}
         </AuthContext.Provider>
     )

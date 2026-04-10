@@ -5,7 +5,8 @@ import jellyfish from '../assets/avatars/Avatar_Jellyfish_400x400.png'
 import seashell from '../assets/avatars/Avatar_Seashell_400x400.png'
 import gelato from '../assets/avatars/Avatar_Gelato_400x400.png'
 import lemon from '../assets/avatars/Avatar_Lemon_400x400.png'
-
+import peppa from '../assets/avatars/Avatar_Peppa_400x400.png'
+import zero from '../assets/avatars/Avatar_Zero_400x400.png'
 
 export const AVATARS = [
     { id: 'guest', src: guest },
@@ -15,5 +16,6 @@ export const AVATARS = [
     { id: 'seashell', src: seashell },
     { id: 'gelato', src: gelato},
     { id: 'lemon', src: lemon},
-
+    { id: 'peppe', src: peppa},
+    { id: 'zero', src: zero},
 ]

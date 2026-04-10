@@ -1,9 +1,12 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { H1, H2 } from '../components/typography/Typography'
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { H1 } from '../components/typography/Typography'
 import Button from '../components/common/Button'
 import NumberPad from '../components/game/NumberPad'
 import { useNewGame } from '../context/NewGameContext'
+import { useAuth } from '../context/AuthContext'
+import { submitScores } from '../api/games'
+import { getDisplayNames } from '../utils/getDisplayNames'
 
 function hexToRgba(hex: string, alpha: number) {
     const r = parseInt(hex.slice(1, 3), 16)
@@ -13,12 +16,18 @@ function hexToRgba(hex: string, alpha: number) {
 }
 
 function ScorecardPage() {
-    const { players, courseName, holes } = useNewGame()
+    const { players, courseName, holes, gameId, gamePlayerMap } = useNewGame()
+    const { token } = useAuth()
     const selectedPlayers = players
     const navigate = useNavigate()
+    const location = useLocation()
+    const locationState = location.state as { fromTurvis?: boolean; scores?: Record<string, Record<number, number | null>> } | null
     const holeCount = holes ?? 0
+    const displayNames = getDisplayNames(selectedPlayers)
 
+    const [showModeModal, setShowModeModal] = useState(!locationState?.fromTurvis)
     const [scores, setScores] = useState<Record<string, Record<number, number | null>>>(
+        locationState?.scores ??
         Object.fromEntries(selectedPlayers.map(p => [p.id, Object.fromEntries(
             Array.from({ length: holeCount }, (_, i) => [i + 1, null])
         )]))
@@ -29,6 +38,13 @@ function ScorecardPage() {
     )
     const [activeCell, setActiveCell] = useState<{ playerId: string; hole: number } | null>(null)
     const [showWarning, setShowWarning] = useState(false)
+    const [showConfirm, setShowConfirm] = useState(false)
+    const rowRefs = useRef<Record<number, HTMLTableRowElement | null>>({})
+
+    useEffect(() => {
+        if (!activeCell) return
+        rowRefs.current[activeCell.hole]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, [activeCell])
 
     function handleSelect(value: number) {
         if (!activeCell) return
@@ -46,25 +62,41 @@ function ScorecardPage() {
         }))
     }
 
-    function handleRatta() {
+    function navigateToTurvis() {
+        const turvisScores: Record<string, Record<number, number>> = Object.fromEntries(
+            selectedPlayers.map(p => [
+                p.id,
+                Object.fromEntries(
+                    Object.entries(scores[p.id])
+                        .filter(([, v]) => v !== null)
+                        .map(([h, v]) => [Number(h), v as number])
+                )
+            ])
+        )
+        navigate('/new-game/turvis', { state: { scores: turvisScores } })
+    }
+
+    async function handleRatta() {
         const hasEmpty = selectedPlayers.some(p =>
             activeHoles.some(h => scores[p.id][h] === null)
         )
         if (hasEmpty) {
             setShowWarning(true)
         } else {
-            navigate('/new-game/results', { state: { scores } })
+            await submitToBackend(scores)
+            navigate('/new-game/animation', { state: { scores } })
         }
     }
 
-    function handleRattaAndå() {
+    async function handleRattaAndå() {
         const filledScores = { ...scores }
         selectedPlayers.forEach(p => {
             activeHoles.forEach(h => {
                 if (filledScores[p.id][h] === null) filledScores[p.id][h] = 7
             })
         })
-        navigate('/new-game/results', { state: { scores: filledScores } })
+        await submitToBackend(filledScores)
+        navigate('/new-game/animation', { state: { scores: filledScores } })
     }
 
     function handlePlockaHål() {
@@ -75,28 +107,42 @@ function ScorecardPage() {
         setShowWarning(false)
     }
 
+    async function submitToBackend(finalScores: Record<string, Record<number, number | null>>) {
+        if (!token || !gameId) return
+        const scoreList = selectedPlayers.flatMap(p =>
+            activeHoles
+                .filter(h => finalScores[p.id][h] !== null)
+                .map(h => ({
+                    gamePlayerId: gamePlayerMap[p.id],
+                    holeNumber: h,
+                    strokes: finalScores[p.id][h]!,
+                }))
+        )
+        await submitScores(token, gameId, scoreList)
+    }
+
     return (
         <>
             <div className={`page${activeCell ? ' page--numpad-active' : ''}`}>
+                <button className="ghost back-button" onClick={() => navigate(-1)}>{'< Tillbaka'}</button>
                 <H1>{courseName ?? 'Bana'}</H1>
-                <div className="card card--full">
-                    <button className="scorecard-back" onClick={() => navigate(-1)}>{'< Tillbaka'}</button>
-                    <H2>Sammanfattning</H2>
+
+                <div className="summarycard summarycard--full" style={{ padding: '15px 1px' }}>
                     <div className="scorecard-wrapper">
                         <table className="scorecard-table">
                             <thead>
                                 <tr>
-                                    <th className="scorecard-hole-header">Hål</th>
+                                    <th className="scorecard-hole-header"></th>
                                     {selectedPlayers.map(p => (
-                                        <th key={p.id} className="scorecard-player-header" style={{ backgroundColor: hexToRgba(p.color, 0.3) }}>
-                                            {p.username}
+                                        <th key={p.id} className="scorecard-player-header">
+                                            <span>{displayNames.get(p.id)}</span>
                                         </th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {activeHoles.map(hole => (
-                                    <tr key={hole}>
+                                    <tr key={hole} ref={el => { rowRefs.current[hole] = el }}>
                                         <td className="scorecard-hole-cell">{hole}.</td>
                                         {selectedPlayers.map(p => {
                                             const isActive = activeCell?.playerId === p.id && activeCell?.hole === hole
@@ -104,7 +150,7 @@ function ScorecardPage() {
                                                 <td
                                                     key={p.id}
                                                     className={`scorecard-score-cell${isActive ? ' scorecard-score-cell--active' : ''}`}
-                                                    style={{ backgroundColor: hexToRgba(p.color, isActive ? 0.35 : 0.15) }}
+                                                    style={{ backgroundColor: hexToRgba(p.color, isActive ? 0.35 : hole % 2 !== 0 ? 0.5 : 0.3) }}
                                                     onClick={() => setActiveCell({ playerId: p.id, hole })}
                                                 >
                                                     {scores[p.id][hole] ?? '-'}
@@ -118,7 +164,11 @@ function ScorecardPage() {
                     </div>
                 </div>
 
-                <Button onClick={handleRatta}>Rätta</Button>
+                <Button onClick={() => setShowConfirm(true)}>Rätta</Button>
+
+                <button className="ghost turvis-link-btn" onClick={navigateToTurvis}>
+                    Spela turvis istället
+                </button>
 
                 {showWarning && (
                     <div className="warning-overlay">
@@ -141,6 +191,26 @@ function ScorecardPage() {
                         onClose={() => setActiveCell(null)}
                     />
                 </>
+            )}
+
+            {showConfirm && (
+                <div className="warning-overlay">
+                    <div className="warning-dialog">
+                        <p>Är ni säkra på att ni vill rätta spelet?</p>
+                        <Button onClick={() => { setShowConfirm(false); handleRatta() }}>Ja, rätta</Button>
+                        <Button onClick={() => setShowConfirm(false)}>Avbryt</Button>
+                    </div>
+                </div>
+            )}
+
+            {showModeModal && (
+                <div className="warning-overlay">
+                    <div className="warning-dialog">
+                        <p>Vill ni fylla i formuläret själva, eller spela hål för hål där varje spelare räknar sina slag i tur och ordning?</p>
+                        <button className="turvis-modal-btn" style={{ backgroundColor: 'var(--button-color, #45AC7F)' }} onClick={() => setShowModeModal(false)}>Fyll i själva</button>
+                        <button className="turvis-modal-btn" style={{ backgroundColor: 'var(--button-color, #45AC7F)' }} onClick={navigateToTurvis}>Spela turvis</button>
+                    </div>
+                </div>
             )}
         </>
     )
