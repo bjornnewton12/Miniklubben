@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import eyeOn from '../../assets/icons/Eye/EyeOn.svg'
-import eyeOff from '../../assets/icons/Eye/EyeOff.svg'
+import eyeOn from '../../assets/icons/eye/EyeOn.svg'
+import eyeOff from '../../assets/icons/eye/EyeOff.svg'
 
 interface InputProps {
     label: string
