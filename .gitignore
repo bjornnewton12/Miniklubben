@@ -27,7 +27,6 @@ frontend/.vite/
 .env.*.local
 appsettings.*.json
 !appsettings.json
-!appsettings.Development.json
 
 # ========================
 # OS
