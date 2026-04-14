@@ -104,6 +104,8 @@ function EditProfilePage() {
 
     return (
         <div className="page">
+            <button className="ghost back-button" onClick={() => navigate(-1)}>{'< Tillbaka'}</button>
+            
             <H1>Ändra profil</H1>
 
             <div className="card card--full">
