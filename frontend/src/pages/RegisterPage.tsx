@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { checkUsername } from '../api/auth'
-import { H1 } from '../components/typography/Typography'
 import Card from '../components/common/Card'
 import Input from '../components/common/Input'
 import Button from '../components/common/Button'
 import ErrorMessage from '../components/common/ErrorMessage'
+import logo from '../assets/logo/Miniklubben_Logo.svg'
 
 function RegisterPage() {
   const [firstName, setFirstName] = useState('')
@@ -45,7 +45,7 @@ function RegisterPage() {
 
   return (
     <div className="page page--centered">
-        <H1>Minigolf</H1>
+        <img src={logo} alt="Miniklubben" style={{ height: '40px' }} />
         <Card>
           <form onSubmit={handleSubmit} className="form">
             <Input label="Användarnamn" value={username} onChange={setUsername} />

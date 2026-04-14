@@ -1,0 +1,17 @@
+{
+  "name": "Miniklubben",
+  "short_name": "Miniklubben",
+  "description": "Miniklubben",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#222222",
+  "theme_color": "#222222",
+  "icons": [
+    {
+      "src": "/icons/Miniklubben_App_Icon_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
