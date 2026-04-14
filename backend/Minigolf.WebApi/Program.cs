@@ -49,8 +49,26 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+var dbHost = builder.Configuration["DB_HOST"];
+var dbPort = builder.Configuration["DB_PORT"] ?? "6543";
+var dbName = builder.Configuration["DB_NAME"] ?? "postgres";
+var dbUser = builder.Configuration["DB_USER"];
+var dbPassword = builder.Configuration["DB_PASSWORD"];
+
+var connectionString = !string.IsNullOrEmpty(dbHost)
+    ? new Npgsql.NpgsqlConnectionStringBuilder
+    {
+        Host = dbHost,
+        Port = int.Parse(dbPort),
+        Database = dbName,
+        Username = dbUser,
+        Password = dbPassword,
+        SslMode = Npgsql.SslMode.Require
+    }.ConnectionString
+    : builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-      options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+      options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
