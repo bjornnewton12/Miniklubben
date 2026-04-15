@@ -70,7 +70,7 @@ function ProfilePage() {
                     <img src={editIcon} className="profile-avatar-edit" alt="" />
                 </div>
                 <H3>{firstName} {surname}</H3>
-                <Label>{username}</Label>
+                <div style={{ marginTop: '-5px' }}><Label>{username}</Label></div>
             </div>
 
             {requests.length > 0 && (

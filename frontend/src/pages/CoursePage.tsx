@@ -86,7 +86,7 @@ function CoursePage() {
     return (
         <div className="page">
             <H1>Nytt spel</H1>
-            <Card>
+            <Card className="card--full">
                 <button className="ghost back-button" onClick={() => navigate(-1)}>{'< Tillbaka'}</button>
                 <H2>Välj bland banor</H2>
 

@@ -72,7 +72,7 @@ function NewGamePage() {
     return (
         <div className="page">
             <H1>Nytt spel</H1>
-            <Card>
+            <Card className="card--full">
                 <H2>Vilka ska spela?</H2>
                 <div className="player-grid">
                     {[currentUser, ...friends.map(f => ({ id: f.userId, firstName: f.firstName, surname: f.surname, color: f.topColor ?? '#6b6b6b', avatarId: f.avatarId })), ...guests.map(g => ({ ...g, avatarId: 'guest' }))].map(player => (

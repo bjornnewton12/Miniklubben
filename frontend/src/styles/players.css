@@ -1,9 +1,11 @@
 .player-grid {
     display: grid;
     grid-template-columns: repeat(3, 80px);
-    column-gap: 16px;
+    column-gap: 19px;
     row-gap: 16px;
-    margin: 16px auto 24px auto;
+    margin: 16px 0 24px 0;
+    width: 100%;
+    justify-content: start;
 }
 
 .player-item {
