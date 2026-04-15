@@ -45,7 +45,7 @@ function RegisterPage() {
 
   return (
     <div className="page page--centered">
-        <img src={logo} alt="Miniklubben" style={{ height: '40px' }} />
+        <img src={logo} alt="Miniklubben" style={{ height: '40px', marginBottom: '20px' }} />
         <Card>
           <form onSubmit={handleSubmit} className="form">
             <Input label="Användarnamn" value={username} onChange={setUsername} />

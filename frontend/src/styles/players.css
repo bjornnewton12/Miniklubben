@@ -1,7 +1,7 @@
 .player-grid {
     display: grid;
     grid-template-columns: repeat(3, 80px);
-    column-gap: 12px;
+    column-gap: 16px;
     row-gap: 16px;
     margin: 16px auto 24px auto;
 }
