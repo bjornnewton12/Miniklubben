@@ -16,6 +16,7 @@ function ProfilePage() {
     const [friends, setFriends] = useState<FriendDto[]>([])
     const [requests, setRequests] = useState<FriendRequestDto[]>([])
     const [searchUsername, setSearchUsername] = useState('')
+    const [foundUser, setFoundUser] = useState<import('../api/users').UserDto | null>(null)
     const [requestSent, setRequestSent] = useState(false)
     const [addError, setAddError] = useState<string | null>(null)
 
@@ -44,18 +45,31 @@ function ProfilePage() {
     async function handleHittaVän() {
         if (!token) return
         setAddError(null)
+        setFoundUser(null)
         const user = await getUserByUsername(token, searchUsername)
         if (!user) {
             setAddError('Användaren hittades inte')
             return
         }
-        const success = await sendFriendRequest(token, user.id)
+        setFoundUser(user)
+    }
+
+    async function handleLäggTill() {
+        if (!token || !foundUser) return
+        const success = await sendFriendRequest(token, foundUser.id)
         if (success) {
             setRequestSent(true)
+            setFoundUser(null)
             setSearchUsername('')
         } else {
             setAddError('Kunde inte skicka vänförfrågan')
         }
+    }
+
+    function handleAvbryt() {
+        setFoundUser(null)
+        setSearchUsername('')
+        setAddError(null)
     }
 
     return (
@@ -109,12 +123,28 @@ function ProfilePage() {
 
             <div className="card card--full">
                 <H2>Lägg till vänner</H2>
-                <Input label="Användarnamn" value={searchUsername} onChange={v => { setSearchUsername(v); setRequestSent(false) }} />
-                <ErrorMessage message={addError} />
-                {requestSent
-                    ? <Label>Vänförfrågan skickad!</Label>
-                    : <Button onClick={handleHittaVän} disabled={!searchUsername}>Hitta vän</Button>
-                }
+                {!foundUser && !requestSent && (
+                    <>
+                        <Input label="Användarnamn" value={searchUsername} onChange={v => { setSearchUsername(v); setAddError(null) }} />
+                        <ErrorMessage message={addError} />
+                        <Button onClick={handleHittaVän} disabled={!searchUsername}>Hitta vän</Button>
+                    </>
+                )}
+                {foundUser && (
+                    <div className="results-row">
+                        <div className="results-avatar" style={{ backgroundColor: foundUser.topColor ?? '#d1d5db' }}>
+                            {(() => { const av = AVATARS.find(a => a.id === foundUser.avatarId); return av ? <img src={av.src} className="avatar-img" alt="" /> : null })()}
+                        </div>
+                        <div>
+                            <div className="h3Left">{foundUser.firstName} {foundUser.surname}</div>
+                            <div className="friend-request-actions">
+                                <button className="friend-request-btn" onClick={handleLäggTill}>Lägg till</button>
+                                <button className="friend-request-btn" onClick={handleAvbryt}>Avbryt</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {requestSent && <Label>Vänförfrågan skickad!</Label>}
             </div>
             <Button onClick={() => { logout(); navigate('/login') }}>Logga ut</Button>
         </div>

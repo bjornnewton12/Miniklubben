@@ -6,7 +6,7 @@ import EditProfilePage from './pages/EditProfilePage'
 import NewGamePage from './pages/NewGamePage'
 import CoursePage from './pages/CoursePage'
 import SummaryPage from './pages/SummaryPage'
-import ScorecardPage from './pages/ScorecardPage'
+import GameManualPage from './pages/GameManualPage'
 import ProfilePage from './pages/ProfilePage'
 import ResultsPage from './pages/ResultsPage'
 import { NewGameProvider } from './context/NewGameContext'
@@ -15,7 +15,7 @@ import PreviousGamesOverviewPage from './pages/PreviousGamesOverviewPage'
 import PreviousGameResultsPage from './pages/PreviousGameResultsPage'
 import FriendProfilePage from './pages/FriendProfilePage'
 import AnimationResultsPage from './pages/AnimationResultsPage'
-import TurvisPage from './pages/TurvisPage'
+import GameAutoPage from './pages/GameAutoPage'
 import { useAuth } from './context/AuthContext'
 
 const HIDE_NAV_ROUTES = ['/login', '/register']
@@ -45,8 +45,8 @@ function App() {
             <Route index element={<NewGamePage />} />
             <Route path="course" element={<CoursePage />} />
             <Route path="summary" element={<SummaryPage />} />
-            <Route path="scorecard" element={<ScorecardPage />} />
-            <Route path="turvis" element={<TurvisPage />} />
+            <Route path="scorecard" element={<GameManualPage />} />
+            <Route path="auto" element={<GameAutoPage />} />
             <Route path="animation" element={<AnimationResultsPage />} />
             <Route path="results" element={<ResultsPage />} />
           </Route>

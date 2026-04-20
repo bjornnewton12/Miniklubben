@@ -15,6 +15,7 @@ import lemon from '../assets/avatars/Avatar_Lemon_400x400.png'
 import peppa from '../assets/avatars/Avatar_Peppa_400x400.png'
 import zero from '../assets/avatars/Avatar_Zero_400x400.png'
 import squid from '../assets/avatars/Avatar_Squid_400x400.png'
+import sunflower from '../assets/avatars/Avatar_Sunflower_400x400.png'
 
 export const AVATARS = [
     { id: 'guest', src: guest },
@@ -23,6 +24,7 @@ export const AVATARS = [
     { id: 'snus', src: snus },
     { id: 'margarita', src: margarita },
     { id: 'dachshund', src: dachshund },
+    { id: 'sunflower', src: sunflower},
     { id: 'dalahorse', src: dalahorse },
     { id: 'fish', src: fish },
     { id: 'flower', src: flower},

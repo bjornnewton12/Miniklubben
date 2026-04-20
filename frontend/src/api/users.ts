@@ -3,6 +3,8 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5098'
 export interface UserDto {
     id: string
     username: string
+    firstName: string
+    surname: string
     avatarId: string
     topColor: string | null
 }

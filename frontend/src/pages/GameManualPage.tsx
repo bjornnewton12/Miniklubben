@@ -15,17 +15,17 @@ function hexToRgba(hex: string, alpha: number) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-function ScorecardPage() {
+function GameManualPage() {
     const { players, courseName, holes, gameId, gamePlayerMap } = useNewGame()
     const { token } = useAuth()
     const selectedPlayers = players
     const navigate = useNavigate()
     const location = useLocation()
-    const locationState = location.state as { fromTurvis?: boolean; scores?: Record<string, Record<number, number | null>> } | null
+    const locationState = location.state as { fromAuto?: boolean; scores?: Record<string, Record<number, number | null>> } | null
     const holeCount = holes ?? 0
     const displayNames = getDisplayNames(selectedPlayers)
 
-    const [showModeModal, setShowModeModal] = useState(!locationState?.fromTurvis)
+    const [showModeModal, setShowModeModal] = useState(!locationState?.fromAuto)
     const [scores, setScores] = useState<Record<string, Record<number, number | null>>>(
         locationState?.scores ??
         Object.fromEntries(selectedPlayers.map(p => [p.id, Object.fromEntries(
@@ -62,8 +62,8 @@ function ScorecardPage() {
         }))
     }
 
-    function navigateToTurvis() {
-        const turvisScores: Record<string, Record<number, number>> = Object.fromEntries(
+    function navigateToAuto() {
+        const autoScores: Record<string, Record<number, number>> = Object.fromEntries(
             selectedPlayers.map(p => [
                 p.id,
                 Object.fromEntries(
@@ -73,7 +73,7 @@ function ScorecardPage() {
                 )
             ])
         )
-        navigate('/new-game/turvis', { state: { scores: turvisScores } })
+        navigate('/new-game/auto', { state: { scores: autoScores } })
     }
 
     async function handleRatta() {
@@ -124,7 +124,6 @@ function ScorecardPage() {
     return (
         <>
             <div className={`page${activeCell ? ' page--numpad-active' : ''}`}>
-                <button className="ghost back-button" onClick={() => navigate(-1)}>{'< Tillbaka'}</button>
                 <H1>{courseName ?? 'Bana'}</H1>
 
                 <div className="summarycard summarycard--full" style={{ padding: '15px 1px' }}>
@@ -166,8 +165,8 @@ function ScorecardPage() {
 
                 <Button onClick={() => setShowConfirm(true)}>Rätta</Button>
 
-                <button className="ghost turvis-link-btn" onClick={navigateToTurvis}>
-                    Spela turvis istället
+                <button className="ghost auto-link-btn" onClick={navigateToAuto}>
+                    Byt till auto-läge
                 </button>
 
                 {showWarning && (
@@ -206,9 +205,9 @@ function ScorecardPage() {
             {showModeModal && (
                 <div className="warning-overlay">
                     <div className="warning-dialog">
-                        <p>Vill ni fylla i formuläret själva, eller spela hål för hål där varje spelare räknar sina slag i tur och ordning?</p>
-                        <button className="turvis-modal-btn" style={{ backgroundColor: 'var(--button-color, #45AC7F)' }} onClick={() => setShowModeModal(false)}>Fyll i själva</button>
-                        <button className="turvis-modal-btn" style={{ backgroundColor: 'var(--button-color, #45AC7F)' }} onClick={navigateToTurvis}>Spela turvis</button>
+                        <p>Vill ni spela i auto-läge eller fylla i era poäng manuellt?</p>
+                        <button className="auto-modal-btn" style={{ backgroundColor: 'var(--button-color, #45AC7F)' }} onClick={navigateToAuto}>Auto</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: 'var(--button-color, #45AC7F)' }} onClick={() => setShowModeModal(false)}>Manuellt</button>
                     </div>
                 </div>
             )}
@@ -216,4 +215,4 @@ function ScorecardPage() {
     )
 }
 
-export default ScorecardPage
+export default GameManualPage

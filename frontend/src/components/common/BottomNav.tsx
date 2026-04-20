@@ -19,7 +19,7 @@ import { useState } from 'react'
       { label: 'Profil', path: '/profile', active: profileActive, inactive: profileInactive, activeNotification: profileActiveNotification, inactiveNotification: profileInactiveNotification },
   ]
 
-  const IN_GAME_PATHS = ['/new-game/course', '/new-game/summary', '/new-game/scorecard']
+  const IN_GAME_PATHS = ['/new-game/course', '/new-game/summary', '/new-game/scorecard', '/new-game/auto']
 
   function BottomNav() {
       const navigate = useNavigate()

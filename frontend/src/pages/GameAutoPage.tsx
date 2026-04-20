@@ -5,6 +5,7 @@ import { useNewGame } from '../context/NewGameContext'
 import { useAuth } from '../context/AuthContext'
 import { submitScores } from '../api/games'
 import type { Player } from '../context/NewGameContext'
+import { getDisplayNames } from '../utils/getDisplayNames'
 
 function shuffled<T>(arr: T[]): T[] {
     const a = [...arr]
@@ -26,7 +27,7 @@ function orderForNextHole(players: Player[], holeScores: Record<string, Record<n
     return sorted.flatMap(([, group]) => shuffled(group))
 }
 
-function TurvisPage() {
+function GameAutoPage() {
     const { players, courseName, holes, gameId, gamePlayerMap } = useNewGame()
     const { token } = useAuth()
     const navigate = useNavigate()
@@ -35,6 +36,10 @@ function TurvisPage() {
 
     const totalHoles = holes ?? 0
     const allHoles = Array.from({ length: totalHoles }, (_, i) => i + 1)
+    const displayNames = getDisplayNames(players)
+
+    const [pendingNextHole, setPendingNextHole] = useState<{
+        holeIndex: number; order: Player[]; playerIndex: number } | null>(null)
 
     const initialScores: Record<string, Record<number, number>> = locationState?.scores
         ? Object.fromEntries(players.map(p => [
@@ -72,7 +77,7 @@ function TurvisPage() {
 
     const currentHole = activeHoles[currentHoleIndex]
     const currentPlayer = playerOrder[currentPlayerIndex]
-    const isLastPlayer = currentPlayerIndex === playerOrder.length - 1
+    const isLastPlayer = !playerOrder.slice(currentPlayerIndex + 1).some(p => holeScores[p.id]?.[currentHole] == null)
     const isLastHole = currentHoleIndex === activeHoles.length - 1
 
     function nextButtonLabel() {
@@ -100,12 +105,23 @@ function TurvisPage() {
         if (isLastPlayer) {
             const nextHoleIndex = currentHoleIndex + 1
             const nextOrder = orderForNextHole(players, updatedScores, currentHole)
-            setCurrentHoleIndex(nextHoleIndex)
-            setPlayerOrder(nextOrder)
-            setCurrentPlayerIndex(0)
+            const nextHole = activeHoles[nextHoleIndex]
+            const firstUnscored = nextOrder.findIndex(p =>
+                updatedScores[p.id]?.[nextHole] == null)
+            setPendingNextHole({ holeIndex: nextHoleIndex, order: nextOrder, playerIndex: firstUnscored === -1 ? 0 : firstUnscored})
         } else {
-            setCurrentPlayerIndex(prev => prev + 1)
+            const nextIndex = playerOrder.findIndex((p, i) => i > currentPlayerIndex && updatedScores[p.id]?.[currentHole] == null)
+            setCurrentPlayerIndex(nextIndex)
         }
+    }
+
+    function confirmNextHole() {
+        if (!pendingNextHole) return
+        setCurrentHoleIndex(pendingNextHole.holeIndex)
+        setPlayerOrder(pendingNextHole.order)
+        setCurrentPlayerIndex(pendingNextHole.playerIndex)
+        setCurrentScore(1)
+        setPendingNextHole(null)
     }
 
     async function submitAndFinish(finalScores: Record<string, Record<number, number>>) {
@@ -142,7 +158,6 @@ function TurvisPage() {
     }
 
     function handleSwitchToScorecard() {
-        // Convert holeScores (only filled) to the Record<string, Record<number, number|null>> format scorecard expects
         const scorecardScores: Record<string, Record<number, number | null>> = Object.fromEntries(
             players.map(p => [
                 p.id,
@@ -154,7 +169,7 @@ function TurvisPage() {
                 )
             ])
         )
-        navigate('/new-game/scorecard', { state: { fromTurvis: true, scores: scorecardScores } })
+        navigate('/new-game/scorecard', { state: { fromAuto: true, scores: scorecardScores } })
     }
 
     if (!currentPlayer) return null
@@ -164,48 +179,57 @@ function TurvisPage() {
             <div className="page page--centered">
                 <H1>{courseName ?? 'Bana'}</H1>
 
-                <div className="turvis-card" style={{ backgroundColor: '#2D2D2D' }}>
-                    <span className="turvis-hole-label">Hål {currentHole}</span>
-                    <span className="turvis-player-name">{currentPlayer.firstName} {currentPlayer.surname}s tur</span>
+                {pendingNextHole ? (
+                    <div className="auto-card" style={{ backgroundColor: '#2D2D2D' }}>
+                        <span className="auto-hole-label">Redo för nästa hål?</span>
+                        <span className="auto-player-name">Hål {activeHoles[pendingNextHole.holeIndex]}</span>
+                        <button className="auto-next-btn" style={{  backgroundColor: pendingNextHole.order[pendingNextHole.playerIndex].color, color: 'white', border: 'none', cursor: 'pointer' }}
+                            onClick={confirmNextHole}>Nästa hål</button>
+                    </div>
+                ) : (
+                    <div className="auto-card" style={{ backgroundColor: '#2D2D2D' }}>
+                        <span className="auto-hole-label">Hål {currentHole}</span>
+                        <span className="auto-player-name">{displayNames.get(currentPlayer.id)}s tur</span>
 
-                    <div className="turvis-score-row">
+                        <div className="auto-score-row">
+                            <button
+                                className="auto-circle-btn"
+                                style={{ backgroundColor: currentPlayer.color, visibility: currentScore > 1 ? 'visible' : 'hidden' }}
+                                onClick={() => setCurrentScore(s => s - 1)}
+                            >
+                                −
+                            </button>
+                            <span className="auto-score">{currentScore}</span>
+                            <button
+                                className="auto-circle-btn"
+                                style={{ backgroundColor: currentPlayer.color, visibility: currentScore < 7 ? 'visible' : 'hidden' }}
+                                onClick={() => setCurrentScore(s => s + 1)}
+                            >
+                                +
+                            </button>
+                        </div>
+
                         <button
-                            className="turvis-circle-btn"
-                            style={{ backgroundColor: currentPlayer.color, visibility: currentScore > 1 ? 'visible' : 'hidden' }}
-                            onClick={() => setCurrentScore(s => s - 1)}
+                            className="auto-next-btn"
+                            style={{
+                                backgroundColor: currentPlayer.color,
+                                border: nextButtonLabel() === 'Nästa hål' ? '3px solid white' : 'none',
+                                color: 'white',
+                                cursor: 'pointer',
+                            }}
+                            onClick={handleNext}
                         >
-                            −
-                        </button>
-                        <span className="turvis-score">{currentScore}</span>
-                        <button
-                            className="turvis-circle-btn"
-                            style={{ backgroundColor: currentPlayer.color, visibility: currentScore < 7 ? 'visible' : 'hidden' }}
-                            onClick={() => setCurrentScore(s => s + 1)}
-                        >
-                            +
+                            {nextButtonLabel()}
                         </button>
                     </div>
+                )}
 
-                    <button
-                        className="turvis-next-btn"
-                        style={{
-                            backgroundColor: currentPlayer.color,
-                            border: nextButtonLabel() === 'Nästa hål' ? '3px solid white' : 'none',
-                            color: 'white',
-                            cursor: 'pointer',
-                        }}
-                        onClick={handleNext}
-                    >
-                        {nextButtonLabel()}
-                    </button>
-                </div>
-
-                <div className="turvis-links">
-                    <button className="ghost turvis-link-btn" onClick={() => setShowSkipModal(true)}>
+                <div className="auto-links">
+                    <button className="ghost auto-link-btn" onClick={() => setShowSkipModal(true)}>
                         Hoppa direkt till resultat
                     </button>
-                    <button className="ghost turvis-link-btn" onClick={handleSwitchToScorecard}>
-                        Börja fylla i formuläret själva
+                    <button className="ghost auto-link-btn" onClick={handleSwitchToScorecard}>
+                        Spela Manuellt istället
                     </button>
                 </div>
             </div>
@@ -214,8 +238,8 @@ function TurvisPage() {
                 <div className="warning-overlay">
                     <div className="warning-dialog">
                         <p>Är ni säkra på att ni vill rätta spelet?</p>
-                        <button className="turvis-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={() => { setShowConfirm(false); submitAndFinish(pendingFinalScores!) }}>Ja, rätta</button>
-                        <button className="turvis-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowConfirm(false)}>Avbryt</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={() => { setShowConfirm(false); submitAndFinish(pendingFinalScores!) }}>Ja, rätta</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowConfirm(false)}>Avbryt</button>
                     </div>
                 </div>
             )}
@@ -224,9 +248,9 @@ function TurvisPage() {
                 <div className="warning-overlay">
                     <div className="warning-dialog">
                         <p>Alla har inte spelat på varje hål. Om du väljer att rätta nu kommer alla ospelade hål automatiskt få 7 poäng. Om du tog miste på antalet hål kan du välja att plocka bort de hål som är helt ospelade.</p>
-                        <button className="turvis-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={handleRattaAndå}>Rätta ändå</button>
-                        <button className="turvis-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={handlePlockaHål}>Plocka bort hål</button>
-                        <button className="turvis-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowSkipModal(false)}>Avbryt</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={handleRattaAndå}>Rätta ändå</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={handlePlockaHål}>Plocka bort hål</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowSkipModal(false)}>Avbryt</button>
                     </div>
                 </div>
             )}
@@ -234,4 +258,4 @@ function TurvisPage() {
     )
 }
 
-export default TurvisPage
+export default GameAutoPage

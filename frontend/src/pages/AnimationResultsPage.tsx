@@ -140,7 +140,7 @@ function AnimationResultsPage() {
                     ))}
                 </div>
             </div>
-            <button className="ghost" onClick={goToResults}>
+            <button onClick={goToResults}>
                 {done ? 'Visa resultat' : 'Hoppa över'}
             </button>
         </div>

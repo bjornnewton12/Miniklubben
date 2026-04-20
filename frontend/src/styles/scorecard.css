@@ -75,7 +75,7 @@
     font-family: var(--font-primary);
 }
 
-.turvis-card {
+.auto-card {
     width: 100%;
     max-width: 360px;
     border-radius: 20px;
@@ -86,14 +86,14 @@
     gap: 24px;
 }
 
-.turvis-hole-label {
+.auto-hole-label {
     font-family: var(--font-primary);
     font-size: 1rem;
     font-weight: 500;
     color: white;
 }
 
-.turvis-player-name {
+.auto-player-name {
     font-family: var(--font-primary);
     font-size: 1.6rem;
     font-weight: 700;
@@ -101,7 +101,7 @@
     text-align: center;
 }
 
-.turvis-score-row {
+.auto-score-row {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -109,7 +109,7 @@
     min-height: 64px;
 }
 
-.turvis-score {
+.auto-score {
     font-family: var(--font-primary);
     font-size: 3rem;
     font-weight: 700;
@@ -118,7 +118,7 @@
     text-align: center;
 }
 
-.turvis-circle-btn {
+.auto-circle-btn {
     width: 52px;
     height: 52px;
     border-radius: 50%;
@@ -135,7 +135,7 @@
     line-height: 1;
 }
 
-.turvis-next-btn {
+.auto-next-btn {
     width: 100%;
     padding: 14px;
     border-radius: 999px;
@@ -146,7 +146,7 @@
     transition: background-color 0.2s;
 }
 
-.turvis-links {
+.auto-links {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -154,7 +154,7 @@
     margin-top: 8px;
 }
 
-.turvis-link-btn {
+.auto-link-btn {
     font-family: var(--font-primary);
     font-size: 0.95rem;
     color: white;
@@ -168,7 +168,7 @@
     opacity: 0.85;
 }
 
-.turvis-modal-btn {
+.auto-modal-btn {
     width: 100%;
     padding: 12px;
     border-radius: 999px;
