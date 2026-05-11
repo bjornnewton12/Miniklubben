@@ -4,7 +4,7 @@
 
 .h1 {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 700;
     font-size: 1.8rem;
     text-align: center;
@@ -12,7 +12,7 @@
 
 .h2 {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 700;
     font-size: 1.5rem;
     text-align: center;
@@ -20,7 +20,7 @@
 
 .h2Result {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 700;
     font-size: 1.5rem;
     text-align: left;
@@ -28,16 +28,16 @@
 
 .h3 {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 700;
     font-size: 1.2rem;
     text-align: center;
-    color: white;
+    color: #FAF4F4;
 }
 
 .h3Left {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 700;
     font-size: 1.2rem;
     text-align: left;
@@ -45,7 +45,7 @@
 
 .paragraph {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 500;
     font-size: 1rem;
     text-align: center;
@@ -53,7 +53,7 @@
 
 .input-label {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 300;
     font-size: 1rem;
     text-align: left;
@@ -63,7 +63,7 @@
 
 .label {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 500;
     font-size: 0.8rem;
     text-align: center;
@@ -72,7 +72,7 @@
 
 .result-label {
     font-family: var(--font-primary);
-    color: white;
+    color: #FAF4F4;
     font-weight: 300;
     font-size: 1rem;
     text-align: left;

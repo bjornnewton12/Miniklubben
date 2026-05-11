@@ -32,7 +32,7 @@ async function handleSubmit(e: React.SyntheticEvent) {
 }
 
   return (
-    <div className="page page--centered">
+    <div className="page page--centered page--auth">
       <img src={logo} alt="Miniklubben" style={{ height: '40px', marginBottom: '20px' }} />
       <Card>
         <form onSubmit={handleSubmit} className="form">

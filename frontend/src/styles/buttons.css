@@ -6,7 +6,7 @@ button {
     font-size: 16px;
     cursor: pointer;
     background-color: var(--button-color, #45AC7F);
-    color: white;
+    color: #FAF4F4;
     display: block;
     margin: 0 auto;
     margin-top: 10px;
@@ -15,12 +15,17 @@ button {
 button:disabled {
     cursor: not-allowed;
     background-color: #676767;
-    color: black;
+    color: #121212;
 }
 
 button.ghost {
     background-color: transparent;
-    color: white;
+    color: #FAF4F4;
+}
+
+.page--auth button[type="submit"] {
+    background-color: #FAF4F4;
+    color: #121212;
 }
 
 button.back-button {

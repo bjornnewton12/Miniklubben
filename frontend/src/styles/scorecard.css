@@ -39,14 +39,14 @@
     padding: 8px;
     font-weight: bold;
     text-align: center;
-    border-bottom: 1px solid #FDF7EB;
+    border-bottom: 1px solid #FAF4F4;
 }
 
 .scorecard-score-cell {
     text-align: center;
     padding: 8px;
     cursor: pointer;
-    border-bottom: 1px solid #FDF7EB;
+    border-bottom: 1px solid #FAF4F4;
 }
 
 .scorecard-score-cell--active {
@@ -64,7 +64,7 @@
 }
 
 .warning-dialog {
-    background-color: white;
+    background-color: #FAF4F4;
     border-radius: 16px;
     padding: 24px;
     max-width: 300px;
@@ -88,43 +88,54 @@
 
 .auto-hole-label {
     font-family: var(--font-primary);
-    font-size: 1rem;
-    font-weight: 500;
-    color: white;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #FAF4F4;
+    margin-bottom: -20px;
 }
 
 .auto-player-name {
     font-family: var(--font-primary);
-    font-size: 1.6rem;
+    font-size: 2rem;
     font-weight: 700;
-    color: white;
+    color: #FAF4F4;
     text-align: center;
+    margin-bottom: -25px;
+}
+
+.auto-score-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: fit-content;
+    min-width: 212px;
+    gap: 16px;
 }
 
 .auto-score-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 36px;
     min-height: 64px;
 }
 
 .auto-score {
     font-family: var(--font-primary);
-    font-size: 3rem;
+    font-size: 4.5rem;
     font-weight: 700;
-    color: white;
+    color: #FAF4F4;
     min-width: 60px;
     text-align: center;
 }
 
 .auto-circle-btn {
-    width: 52px;
-    height: 52px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: none;
-    color: white;
-    font-size: 1.6rem;
+    color: #FAF4F4;
+    font-size: 2rem;
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -141,9 +152,32 @@
     border-radius: 999px;
     border: none;
     font-family: var(--font-primary);
-    font-size: 1rem;
+    font-size: 1.3rem;
     font-weight: 600;
     transition: background-color 0.2s;
+}
+
+.auto-queue {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.auto-queue-label {
+    font-family: var(--font-primary);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #FAF4F4;
+}
+
+.auto-queue-names {
+    font-family: var(--font-primary);
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: #FAF4F4;
+    text-align: center;
 }
 
 .auto-links {
@@ -157,7 +191,7 @@
 .auto-link-btn {
     font-family: var(--font-primary);
     font-size: 0.95rem;
-    color: white;
+    color: #FAF4F4;
     background: none;
     border: none;
     cursor: pointer;
@@ -176,7 +210,7 @@
     font-family: var(--font-primary);
     font-size: 1rem;
     font-weight: 600;
-    color: white;
+    color: #FAF4F4;
     cursor: pointer;
 }
 

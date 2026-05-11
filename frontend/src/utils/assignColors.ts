@@ -54,14 +54,10 @@ export function assignColors(players: Array<{
         }
     }
 
-    // Guests get shuffled remaining colors
-    const remaining = COLORS.map(c => c.hex).filter(h => !taken.has(h))
-    for (let i = remaining.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [remaining[i], remaining[j]] = [remaining[j], remaining[i]]
-    }
+    const GUEST_COLOR_RANKING = ['#F5C400', '#00C8E0', '#39D353', '#F675C2', '#FF5B49', '#B050FF']
+    const guestPool = GUEST_COLOR_RANKING.filter(h => !taken.has(h))
     guests.forEach((g, i) => {
-        assigned.set(g.id, remaining[i % Math.max(remaining.length, 1)] ?? '#6b6b6b')
+        assigned.set(g.id, guestPool[i] ?? '#6b6b6b')
     })
 
     return assigned

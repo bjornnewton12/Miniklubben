@@ -24,8 +24,8 @@
 .number-pad__key {
     padding: 18px;
     font-size: 20px;
-    background-color: white;
-    color: black;
+    background-color: #FAF4F4;
+    color: #121212;
     border-radius: 8px;
     border: none;
     cursor: pointer;
@@ -35,6 +35,6 @@
 }
 
 .number-pad__key--action {
-    background-color: #e5e7eb;
-    color: black;
+    background-color: #FAF4F4;
+    color: #121212;
 }

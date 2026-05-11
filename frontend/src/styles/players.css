@@ -1,11 +1,10 @@
 .player-grid {
     display: grid;
-    grid-template-columns: repeat(3, 80px);
+    grid-template-columns: repeat(3, 1fr);
     column-gap: 19px;
     row-gap: 16px;
     margin: 16px 0 24px 0;
     width: 100%;
-    justify-content: start;
 }
 
 .player-item {
@@ -18,8 +17,8 @@
 }
 
 .player-circle {
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    aspect-ratio: 1;
     border-radius: 50%;
     position: relative;
     display: flex;
@@ -72,7 +71,7 @@
 .color-ranking__name {
     font-family: var(--font-primary);
     font-weight: 500;
-    color: white;
+    color: #FAF4F4;
 }
 
 .color-ranking__controls {
@@ -84,7 +83,7 @@
 .color-ranking__btn {
     background: none;
     border: none;
-    color: white;
+    color: #FAF4F4;
     padding: 2px 8px;
     margin: 0;
     width: auto;
@@ -118,7 +117,7 @@
 .color-pick-label {
     font-family: var(--font-primary);
     font-size: 11px;
-    color: white;
+    color: #FAF4F4;
     font-weight: 500;
     text-align: center;
     line-height: 1.2;
@@ -140,5 +139,5 @@
     cursor: pointer;
     border: none;
     background: none;
-    color: white;
+    color: #FAF4F4;
 }

@@ -46,7 +46,7 @@ function RegisterPage() {
   }
 
   return (
-    <div className="page page--centered">
+    <div className="page page--centered page--auth">
         <img src={logo} alt="Miniklubben" style={{ height: '40px', marginBottom: '20px' }} />
         <Card>
           {step === 1 ? (

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { submitScores } from '../api/games'
 import type { Player } from '../context/NewGameContext'
 import { getDisplayNames } from '../utils/getDisplayNames'
+import { getTextColor } from '../utils/getTextColor'
 
 function shuffled<T>(arr: T[]): T[] {
     const a = [...arr]
@@ -79,6 +80,7 @@ function GameAutoPage() {
     const currentPlayer = playerOrder[currentPlayerIndex]
     const isLastPlayer = !playerOrder.slice(currentPlayerIndex + 1).some(p => holeScores[p.id]?.[currentHole] == null)
     const isLastHole = currentHoleIndex === activeHoles.length - 1
+    const remainingPlayers = playerOrder.slice(currentPlayerIndex + 1).filter(p => holeScores[p.id]?.[currentHole] == null)
 
     function nextButtonLabel() {
         if (isLastPlayer && isLastHole) return 'Rätta'
@@ -183,44 +185,65 @@ function GameAutoPage() {
                     <div className="auto-card" style={{ backgroundColor: '#2D2D2D' }}>
                         <span className="auto-hole-label">Redo för nästa hål?</span>
                         <span className="auto-player-name">Hål {activeHoles[pendingNextHole.holeIndex]}</span>
-                        <button className="auto-next-btn" style={{  backgroundColor: pendingNextHole.order[pendingNextHole.playerIndex].color, color: 'white', border: 'none', cursor: 'pointer' }}
-                            onClick={confirmNextHole}>Nästa hål</button>
+                        <div className="auto-score-controls">
+                            <button className="auto-next-btn" style={{ backgroundColor: pendingNextHole.order[pendingNextHole.playerIndex].color, color: getTextColor(pendingNextHole.order[pendingNextHole.playerIndex].color), border: 'none', cursor: 'pointer' }}
+                                onClick={confirmNextHole}>Nästa hål</button>
+                        </div>
+                        <div className="auto-queue">
+                            <span className="auto-queue-label">Nästa i ordningen</span>
+                            <span className="auto-queue-names">
+                                {pendingNextHole.order.slice(pendingNextHole.playerIndex).map(p => displayNames.get(p.id)).join(', ')}
+                            </span>
+                        </div>
                     </div>
                 ) : (
                     <div className="auto-card" style={{ backgroundColor: '#2D2D2D' }}>
                         <span className="auto-hole-label">Hål {currentHole}</span>
                         <span className="auto-player-name">{displayNames.get(currentPlayer.id)}s tur</span>
 
-                        <div className="auto-score-row">
+                        <div className="auto-score-controls">
+                            <div className="auto-score-row">
+                                <button
+                                    className="auto-circle-btn"
+                                    style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color), visibility: currentScore > 1 ? 'visible' : 'hidden' }}
+                                    onClick={() => setCurrentScore(s => s - 1)}
+                                >
+                                    −
+                                </button>
+                                <span className="auto-score">{currentScore}</span>
+                                <button
+                                    className="auto-circle-btn"
+                                    style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color), visibility: currentScore < 7 ? 'visible' : 'hidden' }}
+                                    onClick={() => setCurrentScore(s => s + 1)}
+                                >
+                                    +
+                                </button>
+                            </div>
+
                             <button
-                                className="auto-circle-btn"
-                                style={{ backgroundColor: currentPlayer.color, visibility: currentScore > 1 ? 'visible' : 'hidden' }}
-                                onClick={() => setCurrentScore(s => s - 1)}
+                                className="auto-next-btn"
+                                style={{
+                                    backgroundColor: currentPlayer.color,
+                                    border: nextButtonLabel() === 'Nästa hål' ? '3px solid white' : 'none',
+                                    color: getTextColor(currentPlayer.color),
+                                    cursor: 'pointer',
+                                }}
+                                onClick={handleNext}
                             >
-                                −
-                            </button>
-                            <span className="auto-score">{currentScore}</span>
-                            <button
-                                className="auto-circle-btn"
-                                style={{ backgroundColor: currentPlayer.color, visibility: currentScore < 7 ? 'visible' : 'hidden' }}
-                                onClick={() => setCurrentScore(s => s + 1)}
-                            >
-                                +
+                                {nextButtonLabel()}
                             </button>
                         </div>
 
-                        <button
-                            className="auto-next-btn"
-                            style={{
-                                backgroundColor: currentPlayer.color,
-                                border: nextButtonLabel() === 'Nästa hål' ? '3px solid white' : 'none',
-                                color: 'white',
-                                cursor: 'pointer',
-                            }}
-                            onClick={handleNext}
-                        >
-                            {nextButtonLabel()}
-                        </button>
+                        {!(isLastPlayer && isLastHole) && (
+                            <div className="auto-queue">
+                                <span className="auto-queue-label">Nästa i ordningen</span>
+                                <span className="auto-queue-names">
+                                    {remainingPlayers.length > 0
+                                        ? remainingPlayers.map(p => displayNames.get(p.id)).join(', ')
+                                        : `Hål ${activeHoles[currentHoleIndex + 1]}`}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -238,7 +261,7 @@ function GameAutoPage() {
                 <div className="warning-overlay">
                     <div className="warning-dialog">
                         <p>Är ni säkra på att ni vill rätta spelet?</p>
-                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={() => { setShowConfirm(false); submitAndFinish(pendingFinalScores!) }}>Ja, rätta</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color) }} onClick={() => { setShowConfirm(false); submitAndFinish(pendingFinalScores!) }}>Ja, rätta</button>
                         <button className="auto-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowConfirm(false)}>Avbryt</button>
                     </div>
                 </div>
@@ -248,8 +271,8 @@ function GameAutoPage() {
                 <div className="warning-overlay">
                     <div className="warning-dialog">
                         <p>Alla har inte spelat på varje hål. Om du väljer att rätta nu kommer alla ospelade hål automatiskt få 7 poäng. Om du tog miste på antalet hål kan du välja att plocka bort de hål som är helt ospelade.</p>
-                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={handleRattaAndå}>Rätta ändå</button>
-                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color }} onClick={handlePlockaHål}>Plocka bort hål</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color) }} onClick={handleRattaAndå}>Rätta ändå</button>
+                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color) }} onClick={handlePlockaHål}>Plocka bort hål</button>
                         <button className="auto-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowSkipModal(false)}>Avbryt</button>
                     </div>
                 </div>

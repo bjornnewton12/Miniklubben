@@ -83,7 +83,7 @@
     width: 68px;
     font-family: var(--font-primary);
     font-size: 14px;
-    color: white;
+    color: #FAF4F4;
     font-weight: 500;
     flex-shrink: 0;
     white-space: nowrap;
@@ -106,7 +106,7 @@
     width: 30px;
     font-family: var(--font-primary);
     font-size: 14px;
-    color: white;
+    color: #FAF4F4;
     font-weight: 500;
     text-align: right;
     flex-shrink: 0;
