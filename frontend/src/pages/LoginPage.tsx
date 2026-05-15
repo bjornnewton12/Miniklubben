@@ -6,7 +6,7 @@ import Card from '../components/common/Card'
 import Input from '../components/common/Input'
 import Button from '../components/common/Button'
 import ErrorMessage from '../components/common/ErrorMessage'
-import logo from '../assets/logo/Miniklubben_Logo.svg'
+import logo from '../assets/logo/miniklubben_logo.svg'
 
 function LoginPage() {
   const [username, setUsername] = useState('')
@@ -33,7 +33,7 @@ async function handleSubmit(e: React.SyntheticEvent) {
 
   return (
     <div className="page page--centered page--auth">
-      <img src={logo} alt="Miniklubben" style={{ height: '40px', marginBottom: '20px' }} />
+      <img src={logo} alt="Miniklubben" style={{ height: '100px', marginBottom: '20px' }} />
       <Card>
         <form onSubmit={handleSubmit} className="form">
           <Input label="Användarnamn" value={username} onChange={setUsername} />

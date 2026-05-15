@@ -5,7 +5,7 @@ import Card from '../components/common/Card'
 import Input from '../components/common/Input'
 import Button from '../components/common/Button'
 import ErrorMessage from '../components/common/ErrorMessage'
-import logo from '../assets/logo/Miniklubben_Logo.svg'
+import logo from '../assets/logo/miniklubben_logo.svg'
 
 function RegisterPage() {
   const [step, setStep] = useState<1 | 2>(1)
@@ -47,7 +47,7 @@ function RegisterPage() {
 
   return (
     <div className="page page--centered page--auth">
-        <img src={logo} alt="Miniklubben" style={{ height: '40px', marginBottom: '20px' }} />
+        <img src={logo} alt="Miniklubben" style={{ height: '100px', marginBottom: '20px' }} />
         <Card>
           {step === 1 ? (
             <form onSubmit={handleNext} className="form">
