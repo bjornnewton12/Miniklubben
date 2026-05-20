@@ -8,7 +8,22 @@ public sealed class GameRepository(AppDbContext db) : IGameRepository
 {
     public async Task<List<Game>> GetAllAsync()
     {
-        return await db.Games.ToListAsync();
+        return await db.Games
+            .Include(g => g.Course)
+            .Include(g => g.Players)
+                .ThenInclude(p => p.User)
+            .Where(g => g.Status == "completed")
+            .OrderByDescending(g => g.CompletedAt)
+            .ToListAsync();
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var game = await db.Games.FindAsync(id);
+        if (game == null) return false;
+        db.Games.Remove(game);
+        await db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<Game?> GetByIdAsync(Guid id)

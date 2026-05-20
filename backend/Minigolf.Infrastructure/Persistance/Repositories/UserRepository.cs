@@ -61,9 +61,18 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
     {
         var user = await db.Users.FindAsync(id);
         if (user == null) return false;
-        db.Users.Remove(user);
+        user.FirstName = "Borttagen";
+        user.Surname = "användare";
+        user.Username = $"deleted_{id:N}"[..16];
+        user.AvatarId = "guest";
+        user.PasswordHash = "";
         await db.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<List<User>> GetAllAsync()
+    {
+        return await db.Users.OrderBy(u => u.FirstName).ToListAsync();
     }
 
     public async Task<List<UserColorRanking>> GetColorRankingsByUserIdsAsync(IEnumerable<Guid> userIds)

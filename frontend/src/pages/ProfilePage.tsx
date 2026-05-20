@@ -11,7 +11,7 @@ import { getFriends, getFriendRequests, acceptFriendRequest, removeFriend, sendF
 import { getUserByUsername } from '../api/users'
 
 function ProfilePage() {
-    const { username, firstName, surname, avatarId, topColor, token, logout } = useAuth()
+    const { username, firstName, surname, avatarId, topColor, token, logout, isAdmin } = useAuth()
     const navigate = useNavigate()
     const [friends, setFriends] = useState<FriendDto[]>([])
     const [requests, setRequests] = useState<FriendRequestDto[]>([])
@@ -146,6 +146,9 @@ function ProfilePage() {
                 )}
                 {requestSent && <Label>Vänförfrågan skickad!</Label>}
             </div>
+            {isAdmin && (
+                <button className="admin-link" onClick={() => navigate('/admin')}>Adminpanel</button>
+            )}
             <Button onClick={() => { logout(); navigate('/login') }}>Logga ut</Button>
         </div>
     )

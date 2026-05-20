@@ -16,6 +16,7 @@ import PreviousGameResultsPage from './pages/PreviousGameResultsPage'
 import FriendProfilePage from './pages/FriendProfilePage'
 import AnimationResultsPage from './pages/AnimationResultsPage'
 import GameAutoPage from './pages/GameAutoPage'
+import AdminPage from './pages/AdminPage'
 import { useAuth } from './context/AuthContext'
 
 const HIDE_NAV_ROUTES = ['/login', '/register']
@@ -54,6 +55,7 @@ function App() {
           <Route path="/previous-games/:id" element={<PreviousGameResultsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/friend/:userId" element={<FriendProfilePage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Route>
       </Routes>
       {showNav && <BottomNav />}

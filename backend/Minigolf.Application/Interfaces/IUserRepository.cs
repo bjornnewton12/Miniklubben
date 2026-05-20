@@ -17,4 +17,5 @@ public interface IUserRepository
     Task<List<UserColorRanking>> GetColorRankingsByUserIdsAsync(IEnumerable<Guid> userIds);
     Task UpdateAsync(User user);
     Task<bool> DeleteAsync(Guid id);
+    Task<List<User>> GetAllAsync();
 }

@@ -9,6 +9,7 @@ interface AuthState {
     avatarId: string | null
     topColor: string | null
     colorRankings: string[]
+    isAdmin: boolean
 }
 
 interface AuthContextType extends AuthState {
@@ -18,18 +19,30 @@ interface AuthContextType extends AuthState {
     updateProfile: (firstName: string, surname: string, avatarId: string, topColor: string, colorRankings: string[]) => void
 }
 
+function getRoleFromToken(token: string | null): string | null {
+    if (!token) return null
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        return payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? null
+    } catch {
+        return null
+    }
+}
+
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const storedToken = localStorage.getItem('token')
     const [auth, setAuth] = useState<AuthState>({
-        token: localStorage.getItem('token'),
+        token: storedToken,
         username: localStorage.getItem('username'),
         firstName: localStorage.getItem('firstName'),
         surname: localStorage.getItem('surname'),
         userId: localStorage.getItem('userId'),
         avatarId: localStorage.getItem('avatarId'),
         topColor: localStorage.getItem('topColor'),
-        colorRankings: JSON.parse(localStorage.getItem('colorRankings') ?? '[]')
+        colorRankings: JSON.parse(localStorage.getItem('colorRankings') ?? '[]'),
+        isAdmin: getRoleFromToken(storedToken) === 'admin'
     })
 
     useEffect(() => {
@@ -45,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('avatarId', avatarId)
         localStorage.setItem('topColor', topColor)
         localStorage.setItem('colorRankings', JSON.stringify(colorRankings))
-        setAuth({ token, username, firstName, surname, userId, avatarId, topColor, colorRankings })
+        setAuth({ token, username, firstName, surname, userId, avatarId, topColor, colorRankings, isAdmin: getRoleFromToken(token) === 'admin' })
     }
 
     function logout() {
@@ -57,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('avatarId')
         localStorage.removeItem('topColor')
         localStorage.removeItem('colorRankings')
-        setAuth({ token: null, username: null, firstName: null, surname: null, userId: null, avatarId: null, topColor: null, colorRankings: [] })
+        setAuth({ token: null, username: null, firstName: null, surname: null, userId: null, avatarId: null, topColor: null, colorRankings: [], isAdmin: false })
     }
 
     function updateAvatar(avatarId: string, topColor: string, colorRankings: string[]) {

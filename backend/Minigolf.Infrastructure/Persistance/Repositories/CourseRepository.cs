@@ -35,4 +35,13 @@ public sealed class CourseRepository(AppDbContext db) : ICourseRepository
         await db.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> RenameAsync(Guid id, string newName)
+    {
+        var course = await db.Courses.FindAsync(id);
+        if (course == null) return false;
+        course.Name = newName;
+        await db.SaveChangesAsync();
+        return true;
+    }
 }

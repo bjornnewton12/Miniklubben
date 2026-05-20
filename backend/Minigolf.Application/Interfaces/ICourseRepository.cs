@@ -8,4 +8,5 @@ public interface ICourseRepository
     Task<Course?> GetByIdAsync(Guid id);
     Task<Course> CreateAsync(Course course);
     Task<bool> DeleteAsync(Guid id);
+    Task<bool> RenameAsync(Guid id, string newName);
 }

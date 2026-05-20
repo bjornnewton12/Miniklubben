@@ -1,10 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useNewGame } from '../context/NewGameContext'
-import { getDisplayNames } from '../utils/getDisplayNames'
+import { AVATARS } from '../constants/avatars'
 
 const ROW_HEIGHT = 56
 const HOLE_DURATION = 500
+const LIGHT_TEXT_COLORS = new Set(['#4100F4', '#9C27B0'])
+
+function scoreTextColor(color: string) {
+    return LIGHT_TEXT_COLORS.has(color) ? '#F4FAFA' : '#121212'
+}
 
 function easeInOut(t: number): number {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
@@ -15,8 +20,6 @@ function AnimationResultsPage() {
     const { state } = useLocation()
     const navigate = useNavigate()
     const scores: Record<string, Record<number, number>> = state?.scores ?? {}
-    const displayNames = getDisplayNames(players)
-
     const activeHoles = useMemo(() => {
         const all = new Set<number>()
         players.forEach(p => Object.keys(scores[p.id] ?? {}).forEach(h => all.add(Number(h))))
@@ -124,18 +127,22 @@ function AnimationResultsPage() {
                             className="animation-row"
                             style={{ transform: `translateY(${(positionMap[p.id] ?? 0) * ROW_HEIGHT}px)` }}
                         >
-                            <span className="animation-name">{displayNames.get(p.id)}</span>
                             <div className="animation-bar-track">
                                 <div
                                     ref={el => { barRefs.current[p.id] = el }}
                                     className="animation-bar"
                                     style={{ backgroundColor: p.color }}
-                                />
+                                >
+                                    <div className="animation-avatar">
+                                        {(() => { const av = AVATARS.find(a => a.id === p.avatarId); return av ? <img src={av.src} alt="" /> : null })()}
+                                    </div>
+                                    <span
+                                        ref={el => { scoreRefs.current[p.id] = el }}
+                                        className="animation-score"
+                                        style={{ color: scoreTextColor(p.color) }}
+                                    >0p</span>
+                                </div>
                             </div>
-                            <span
-                                ref={el => { scoreRefs.current[p.id] = el }}
-                                className="animation-score"
-                            >0p</span>
                         </div>
                     ))}
                 </div>

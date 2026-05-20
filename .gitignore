@@ -29,6 +29,16 @@ appsettings.*.json
 !appsettings.json
 
 # ========================
+# Claude Code
+# ========================
+.claude/settings.local.json
+
+# ========================
+# Reference images
+# ========================
+frontend/public/reference/
+
+# ========================
 # OS
 # ========================
 .DS_Store

@@ -17,7 +17,11 @@ using Minigolf.Application.UseCases.Games.GetGameById;
 using Minigolf.Application.UseCases.Games.GetGameResults;
 using Minigolf.Application.UseCases.Games.SubmitScores;
 using Minigolf.Application.UseCases.Admin.DeleteCourse;
+using Minigolf.Application.UseCases.Admin.DeleteGame;
 using Minigolf.Application.UseCases.Admin.DeleteUser;
+using Minigolf.Application.UseCases.Admin.GetAllGames;
+using Minigolf.Application.UseCases.Admin.GetAllUsers;
+using Minigolf.Application.UseCases.Admin.RenameCourse;
 using Minigolf.Application.UseCases.Users.GetColors;
 using Minigolf.Application.UseCases.Users.GetCurrentUser;
 using Minigolf.Application.UseCases.Users.GetUserByUsername;
@@ -99,6 +103,10 @@ builder.Services.AddScoped<GetUserGamesHandler>();
 
 builder.Services.AddScoped<DeleteUserHandler>();
 builder.Services.AddScoped<DeleteCourseHandler>();
+builder.Services.AddScoped<DeleteGameHandler>();
+builder.Services.AddScoped<GetAllUsersHandler>();
+builder.Services.AddScoped<GetAllGamesHandler>();
+builder.Services.AddScoped<RenameCourseHandler>();
 
 builder.Services.AddScoped<IColorRepository, ColorRepository>();
 builder.Services.AddScoped<GetColorsHandler>();

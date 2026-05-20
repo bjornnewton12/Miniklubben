@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git -C \"C:\\\\Users\\\\bnknu\\\\Documents\\\\Personal Projects\\\\Minigolf\" ls-files backend/)",
-      "Bash(xargs git:*)"
-    ]
-  }
-}
