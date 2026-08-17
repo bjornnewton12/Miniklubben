@@ -19,7 +19,7 @@ import GameAutoPage from './pages/GameAutoPage'
 import AdminPage from './pages/AdminPage'
 import { useAuth } from './context/AuthContext'
 
-const HIDE_NAV_ROUTES = ['/login', '/register']
+const HIDE_NAV_ROUTES = ['/login', '/register', '/new-game/scorecard', '/new-game/auto']
 
 function RequireAuth() {
   const { token } = useAuth()

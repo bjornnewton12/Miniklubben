@@ -34,3 +34,15 @@ button.back-button {
     padding: 4px 0;
     align-self: flex-start;
 }
+
+button.auto-cancel-link {
+    position: absolute;
+    top: 68px;
+    left: 16px;
+    margin: 0;
+    padding: 4px 0;
+}
+
+.auto-title {
+    margin-top: 64px;
+}

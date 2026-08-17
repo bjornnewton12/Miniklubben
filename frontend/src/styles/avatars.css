@@ -12,6 +12,12 @@
     align-items: center;
     gap: 6px;
     cursor: pointer;
+    min-width: 0;
+}
+
+.course-name {
+    hyphens: auto;
+    overflow-wrap: break-word;
 }
 
 .course-thumbnail {

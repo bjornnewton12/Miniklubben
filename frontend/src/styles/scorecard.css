@@ -103,6 +103,29 @@
     margin-bottom: -25px;
 }
 
+.auto-player-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: -25px;
+}
+
+.auto-player-row .auto-player-name {
+    margin-bottom: 0;
+}
+
+.auto-player-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .auto-score-controls {
     display: flex;
     flex-direction: column;

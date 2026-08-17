@@ -36,7 +36,7 @@ function PreviousGamesPage() {
                             <div className="course-thumbnail">
                                 {game.courseImageUrl && <img src={game.courseImageUrl} alt={game.courseName} />}
                             </div>
-                            <span className="label"><strong>{game.courseName}</strong></span>
+                            <span className="label course-name" lang="sv"><strong>{game.courseName}</strong></span>
                             <span className="label">{formatDate(game.completedAt)}</span>
                         </div>
                     ))}

@@ -108,7 +108,7 @@ function CoursePage() {
                                             }}>
                                                 {course.imageUrl && <img src={course.imageUrl} alt={course.name} />}
                                             </div>
-                                            <span className="label">{course.name}</span>
+                                            <span className="label course-name" lang="sv">{course.name}</span>
                                             <span className="label">{course.minHoles} hål</span>
                                         </div>
                                     ))}

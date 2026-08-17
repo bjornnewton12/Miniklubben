@@ -39,6 +39,7 @@ function GameManualPage() {
     const [activeCell, setActiveCell] = useState<{ playerId: string; hole: number } | null>(null)
     const [showWarning, setShowWarning] = useState(false)
     const [showConfirm, setShowConfirm] = useState(false)
+    const [showCancelWarning, setShowCancelWarning] = useState(false)
     const rowRefs = useRef<Record<number, HTMLTableRowElement | null>>({})
 
     useEffect(() => {
@@ -124,7 +125,8 @@ function GameManualPage() {
     return (
         <>
             <div className={`page${activeCell ? ' page--numpad-active' : ''}`}>
-                <H1>{courseName ?? 'Bana'}</H1>
+                <button className="ghost auto-cancel-link" onClick={() => setShowCancelWarning(true)}>{'< Avbryt'}</button>
+                <H1 className="auto-title">{courseName ?? 'Bana'}</H1>
 
                 <div className="summarycard summarycard--full" style={{ padding: '15px 1px' }}>
                     <div className="scorecard-wrapper">
@@ -198,6 +200,16 @@ function GameManualPage() {
                         <p>Är ni säkra på att ni vill rätta spelet?</p>
                         <Button onClick={() => { setShowConfirm(false); handleRatta() }}>Ja, rätta</Button>
                         <Button onClick={() => setShowConfirm(false)}>Avbryt</Button>
+                    </div>
+                </div>
+            )}
+
+            {showCancelWarning && (
+                <div className="warning-overlay">
+                    <div className="warning-dialog">
+                        <p>Du håller på med ett spel. Om du lämnar nu kommer ditt pågående spel att gå förlorat.</p>
+                        <Button onClick={() => navigate('/new-game')}>Lämna spelet</Button>
+                        <Button onClick={() => setShowCancelWarning(false)}>Avbryt</Button>
                     </div>
                 </div>
             )}

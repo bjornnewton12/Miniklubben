@@ -1,284 +1,473 @@
-import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { H1 } from '../components/typography/Typography'
-import { useNewGame } from '../context/NewGameContext'
-import { useAuth } from '../context/AuthContext'
-import { submitScores } from '../api/games'
-import type { Player } from '../context/NewGameContext'
-import { getDisplayNames } from '../utils/getDisplayNames'
-import { getTextColor } from '../utils/getTextColor'
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { H1 } from "../components/typography/Typography";
+import { useNewGame } from "../context/NewGameContext";
+import { useAuth } from "../context/AuthContext";
+import { submitScores } from "../api/games";
+import type { Player } from "../context/NewGameContext";
+import { getDisplayNames } from "../utils/getDisplayNames";
+import { getTextColor } from "../utils/getTextColor";
+import { AVATARS } from "../constants/avatars";
 
 function shuffled<T>(arr: T[]): T[] {
-    const a = [...arr]
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[a[i], a[j]] = [a[j], a[i]]
-    }
-    return a
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-function orderForNextHole(players: Player[], holeScores: Record<string, Record<number, number>>, hole: number): Player[] {
-    const withScores = players.map(p => ({ player: p, score: holeScores[p.id]?.[hole] ?? 7 }))
-    const groups = new Map<number, Player[]>()
-    for (const { player, score } of withScores) {
-        if (!groups.has(score)) groups.set(score, [])
-        groups.get(score)!.push(player)
-    }
-    const sorted = [...groups.entries()].sort((a, b) => a[0] - b[0])
-    return sorted.flatMap(([, group]) => shuffled(group))
+function orderForNextHole(
+  players: Player[],
+  holeScores: Record<string, Record<number, number>>,
+  hole: number,
+): Player[] {
+  const withScores = players.map((p) => ({
+    player: p,
+    score: holeScores[p.id]?.[hole] ?? 7,
+  }));
+  const groups = new Map<number, Player[]>();
+  for (const { player, score } of withScores) {
+    if (!groups.has(score)) groups.set(score, []);
+    groups.get(score)!.push(player);
+  }
+  const sorted = [...groups.entries()].sort((a, b) => a[0] - b[0]);
+  return sorted.flatMap(([, group]) => shuffled(group));
 }
 
 function GameAutoPage() {
-    const { players, courseName, holes, gameId, gamePlayerMap } = useNewGame()
-    const { token } = useAuth()
-    const navigate = useNavigate()
-    const location = useLocation()
-    const locationState = location.state as { scores?: Record<string, Record<number, number>> } | null
+  const { players, courseName, holes, gameId, gamePlayerMap } = useNewGame();
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state as {
+    scores?: Record<string, Record<number, number>>;
+  } | null;
 
-    const totalHoles = holes ?? 0
-    const allHoles = Array.from({ length: totalHoles }, (_, i) => i + 1)
-    const displayNames = getDisplayNames(players)
+  const totalHoles = holes ?? 0;
+  const allHoles = Array.from({ length: totalHoles }, (_, i) => i + 1);
+  const displayNames = getDisplayNames(players);
 
-    const [pendingNextHole, setPendingNextHole] = useState<{
-        holeIndex: number; order: Player[]; playerIndex: number } | null>(null)
+  const [pendingNextHole, setPendingNextHole] = useState<{
+    holeIndex: number;
+    order: Player[];
+    playerIndex: number;
+  } | null>(null);
 
-    const initialScores: Record<string, Record<number, number>> = locationState?.scores
-        ? Object.fromEntries(players.map(p => [
-            p.id,
-            Object.fromEntries(
-                Object.entries(locationState.scores![p.id] ?? {}).map(([h, s]) => [Number(h), s as number])
-            )
-          ]))
-        : Object.fromEntries(players.map(p => [p.id, {}]))
+  const initialScores: Record<
+    string,
+    Record<number, number>
+  > = locationState?.scores
+    ? Object.fromEntries(
+        players.map((p) => [
+          p.id,
+          Object.fromEntries(
+            Object.entries(locationState.scores![p.id] ?? {}).map(([h, s]) => [
+              Number(h),
+              s as number,
+            ]),
+          ),
+        ]),
+      )
+    : Object.fromEntries(players.map((p) => [p.id, {}]));
 
-    function findStart(scores: Record<string, Record<number, number>>) {
-        let order = shuffled(players)
-        for (let hi = 0; hi < allHoles.length; hi++) {
-            if (hi > 0) order = orderForNextHole(players, scores, allHoles[hi - 1])
-            for (let pi = 0; pi < order.length; pi++) {
-                if (scores[order[pi].id]?.[allHoles[hi]] == null) {
-                    return { holeIndex: hi, playerIndex: pi, order }
-                }
-            }
+  function findStart(scores: Record<string, Record<number, number>>) {
+    let order = shuffled(players);
+    for (let hi = 0; hi < allHoles.length; hi++) {
+      if (hi > 0) order = orderForNextHole(players, scores, allHoles[hi - 1]);
+      for (let pi = 0; pi < order.length; pi++) {
+        if (scores[order[pi].id]?.[allHoles[hi]] == null) {
+          return { holeIndex: hi, playerIndex: pi, order };
         }
-        return { holeIndex: allHoles.length - 1, playerIndex: players.length - 1, order }
+      }
+    }
+    return {
+      holeIndex: allHoles.length - 1,
+      playerIndex: players.length - 1,
+      order,
+    };
+  }
+
+  const start = findStart(initialScores);
+
+  const [activeHoles, setActiveHoles] = useState(allHoles);
+  const [holeScores, setHoleScores] = useState(initialScores);
+  const [playerOrder, setPlayerOrder] = useState<Player[]>(start.order);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(
+    start.playerIndex,
+  );
+  const [currentHoleIndex, setCurrentHoleIndex] = useState(start.holeIndex);
+  const [currentScore, setCurrentScore] = useState(1);
+  const [showSkipModal, setShowSkipModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [showCancelWarning, setShowCancelWarning] = useState(false);
+  const [pendingFinalScores, setPendingFinalScores] = useState<Record<
+    string,
+    Record<number, number>
+  > | null>(null);
+
+  const currentHole = activeHoles[currentHoleIndex];
+  const currentPlayer = playerOrder[currentPlayerIndex];
+  const isLastPlayer = !playerOrder
+    .slice(currentPlayerIndex + 1)
+    .some((p) => holeScores[p.id]?.[currentHole] == null);
+  const isLastHole = currentHoleIndex === activeHoles.length - 1;
+  const remainingPlayers = playerOrder
+    .slice(currentPlayerIndex + 1)
+    .filter((p) => holeScores[p.id]?.[currentHole] == null);
+
+  function nextButtonLabel() {
+    if (isLastPlayer && isLastHole) return "Rätta";
+    if (isLastPlayer) return "Nästa hål";
+    return "Nästa spelare";
+  }
+
+  function handleNext() {
+    if (currentScore === 0) return;
+
+    const updatedScores = {
+      ...holeScores,
+      [currentPlayer.id]: {
+        ...holeScores[currentPlayer.id],
+        [currentHole]: currentScore,
+      },
+    };
+    setHoleScores(updatedScores);
+    setCurrentScore(1);
+
+    if (isLastPlayer && isLastHole) {
+      setPendingFinalScores(updatedScores);
+      setShowConfirm(true);
+      return;
     }
 
-    const start = findStart(initialScores)
-
-    const [activeHoles, setActiveHoles] = useState(allHoles)
-    const [holeScores, setHoleScores] = useState(initialScores)
-    const [playerOrder, setPlayerOrder] = useState<Player[]>(start.order)
-    const [currentPlayerIndex, setCurrentPlayerIndex] = useState(start.playerIndex)
-    const [currentHoleIndex, setCurrentHoleIndex] = useState(start.holeIndex)
-    const [currentScore, setCurrentScore] = useState(1)
-    const [showSkipModal, setShowSkipModal] = useState(false)
-    const [showConfirm, setShowConfirm] = useState(false)
-    const [pendingFinalScores, setPendingFinalScores] = useState<Record<string, Record<number, number>> | null>(null)
-
-    const currentHole = activeHoles[currentHoleIndex]
-    const currentPlayer = playerOrder[currentPlayerIndex]
-    const isLastPlayer = !playerOrder.slice(currentPlayerIndex + 1).some(p => holeScores[p.id]?.[currentHole] == null)
-    const isLastHole = currentHoleIndex === activeHoles.length - 1
-    const remainingPlayers = playerOrder.slice(currentPlayerIndex + 1).filter(p => holeScores[p.id]?.[currentHole] == null)
-
-    function nextButtonLabel() {
-        if (isLastPlayer && isLastHole) return 'Rätta'
-        if (isLastPlayer) return 'Nästa hål'
-        return 'Nästa spelare'
+    if (isLastPlayer) {
+      const nextHoleIndex = currentHoleIndex + 1;
+      const nextOrder = orderForNextHole(players, updatedScores, currentHole);
+      const nextHole = activeHoles[nextHoleIndex];
+      const firstUnscored = nextOrder.findIndex(
+        (p) => updatedScores[p.id]?.[nextHole] == null,
+      );
+      setPendingNextHole({
+        holeIndex: nextHoleIndex,
+        order: nextOrder,
+        playerIndex: firstUnscored === -1 ? 0 : firstUnscored,
+      });
+    } else {
+      const nextIndex = playerOrder.findIndex(
+        (p, i) =>
+          i > currentPlayerIndex && updatedScores[p.id]?.[currentHole] == null,
+      );
+      setCurrentPlayerIndex(nextIndex);
     }
+  }
 
-    function handleNext() {
-        if (currentScore === 0) return
+  function confirmNextHole() {
+    if (!pendingNextHole) return;
+    setCurrentHoleIndex(pendingNextHole.holeIndex);
+    setPlayerOrder(pendingNextHole.order);
+    setCurrentPlayerIndex(pendingNextHole.playerIndex);
+    setCurrentScore(1);
+    setPendingNextHole(null);
+  }
 
-        const updatedScores = {
-            ...holeScores,
-            [currentPlayer.id]: { ...holeScores[currentPlayer.id], [currentHole]: currentScore }
-        }
-        setHoleScores(updatedScores)
-        setCurrentScore(1)
+  async function submitAndFinish(
+    finalScores: Record<string, Record<number, number>>,
+  ) {
+    if (!token || !gameId) return;
+    const scoreList = players.flatMap((p) =>
+      activeHoles
+        .filter((h) => finalScores[p.id]?.[h] != null)
+        .map((h) => ({
+          gamePlayerId: gamePlayerMap[p.id],
+          holeNumber: h,
+          strokes: finalScores[p.id][h],
+        })),
+    );
+    await submitScores(token, gameId, scoreList);
+    navigate("/new-game/animation", { state: { scores: finalScores } });
+  }
 
-        if (isLastPlayer && isLastHole) {
-            setPendingFinalScores(updatedScores)
-            setShowConfirm(true)
-            return
-        }
+  async function handleRattaAndå() {
+    const filled = { ...holeScores };
+    players.forEach((p) => {
+      activeHoles.forEach((h) => {
+        if (filled[p.id]?.[h] == null)
+          filled[p.id] = { ...filled[p.id], [h]: 7 };
+      });
+    });
+    await submitAndFinish(filled);
+  }
 
-        if (isLastPlayer) {
-            const nextHoleIndex = currentHoleIndex + 1
-            const nextOrder = orderForNextHole(players, updatedScores, currentHole)
-            const nextHole = activeHoles[nextHoleIndex]
-            const firstUnscored = nextOrder.findIndex(p =>
-                updatedScores[p.id]?.[nextHole] == null)
-            setPendingNextHole({ holeIndex: nextHoleIndex, order: nextOrder, playerIndex: firstUnscored === -1 ? 0 : firstUnscored})
-        } else {
-            const nextIndex = playerOrder.findIndex((p, i) => i > currentPlayerIndex && updatedScores[p.id]?.[currentHole] == null)
-            setCurrentPlayerIndex(nextIndex)
-        }
-    }
+  function handlePlockaHål() {
+    const unplayed = activeHoles.filter((h) =>
+      players.every((p) => holeScores[p.id]?.[h] == null),
+    );
+    setActiveHoles((prev) => prev.filter((h) => !unplayed.includes(h)));
+    setShowSkipModal(false);
+  }
 
-    function confirmNextHole() {
-        if (!pendingNextHole) return
-        setCurrentHoleIndex(pendingNextHole.holeIndex)
-        setPlayerOrder(pendingNextHole.order)
-        setCurrentPlayerIndex(pendingNextHole.playerIndex)
-        setCurrentScore(1)
-        setPendingNextHole(null)
-    }
+  function handleSwitchToScorecard() {
+    const scorecardScores: Record<
+      string,
+      Record<number, number | null>
+    > = Object.fromEntries(
+      players.map((p) => [
+        p.id,
+        Object.fromEntries(
+          Array.from({ length: totalHoles }, (_, i) => {
+            const h = i + 1;
+            return [h, holeScores[p.id]?.[h] ?? null];
+          }),
+        ),
+      ]),
+    );
+    navigate("/new-game/scorecard", {
+      state: { fromAuto: true, scores: scorecardScores },
+    });
+  }
 
-    async function submitAndFinish(finalScores: Record<string, Record<number, number>>) {
-        if (!token || !gameId) return
-        const scoreList = players.flatMap(p =>
-            activeHoles
-                .filter(h => finalScores[p.id]?.[h] != null)
-                .map(h => ({
-                    gamePlayerId: gamePlayerMap[p.id],
-                    holeNumber: h,
-                    strokes: finalScores[p.id][h],
-                }))
-        )
-        await submitScores(token, gameId, scoreList)
-        navigate('/new-game/animation', { state: { scores: finalScores } })
-    }
+  if (!currentPlayer) return null;
 
-    async function handleRattaAndå() {
-        const filled = { ...holeScores }
-        players.forEach(p => {
-            activeHoles.forEach(h => {
-                if (filled[p.id]?.[h] == null) filled[p.id] = { ...filled[p.id], [h]: 7 }
-            })
-        })
-        await submitAndFinish(filled)
-    }
+  return (
+    <>
+      <div className="page page--centered">
+        <button
+          className="ghost auto-cancel-link"
+          onClick={() => setShowCancelWarning(true)}
+        >
+          {"< Avbryt"}
+        </button>
+        <H1 className="auto-title">{courseName ?? "Bana"}</H1>
 
-    function handlePlockaHål() {
-        const unplayed = activeHoles.filter(h =>
-            players.every(p => holeScores[p.id]?.[h] == null)
-        )
-        setActiveHoles(prev => prev.filter(h => !unplayed.includes(h)))
-        setShowSkipModal(false)
-    }
-
-    function handleSwitchToScorecard() {
-        const scorecardScores: Record<string, Record<number, number | null>> = Object.fromEntries(
-            players.map(p => [
-                p.id,
-                Object.fromEntries(
-                    Array.from({ length: totalHoles }, (_, i) => {
-                        const h = i + 1
-                        return [h, holeScores[p.id]?.[h] ?? null]
-                    })
-                )
-            ])
-        )
-        navigate('/new-game/scorecard', { state: { fromAuto: true, scores: scorecardScores } })
-    }
-
-    if (!currentPlayer) return null
-
-    return (
-        <>
-            <div className="page page--centered">
-                <H1>{courseName ?? 'Bana'}</H1>
-
-                {pendingNextHole ? (
-                    <div className="auto-card" style={{ backgroundColor: '#2D2D2D' }}>
-                        <span className="auto-hole-label">Redo för nästa hål?</span>
-                        <span className="auto-player-name">Hål {activeHoles[pendingNextHole.holeIndex]}</span>
-                        <div className="auto-score-controls">
-                            <button className="auto-next-btn" style={{ backgroundColor: pendingNextHole.order[pendingNextHole.playerIndex].color, color: getTextColor(pendingNextHole.order[pendingNextHole.playerIndex].color), border: 'none', cursor: 'pointer' }}
-                                onClick={confirmNextHole}>Nästa hål</button>
-                        </div>
-                        <div className="auto-queue">
-                            <span className="auto-queue-label">Nästa i ordningen</span>
-                            <span className="auto-queue-names">
-                                {pendingNextHole.order.slice(pendingNextHole.playerIndex).map(p => displayNames.get(p.id)).join(', ')}
-                            </span>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="auto-card" style={{ backgroundColor: '#2D2D2D' }}>
-                        <span className="auto-hole-label">Hål {currentHole}</span>
-                        <span className="auto-player-name">{displayNames.get(currentPlayer.id)}s tur</span>
-
-                        <div className="auto-score-controls">
-                            <div className="auto-score-row">
-                                <button
-                                    className="auto-circle-btn"
-                                    style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color), visibility: currentScore > 1 ? 'visible' : 'hidden' }}
-                                    onClick={() => setCurrentScore(s => s - 1)}
-                                >
-                                    −
-                                </button>
-                                <span className="auto-score">{currentScore}</span>
-                                <button
-                                    className="auto-circle-btn"
-                                    style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color), visibility: currentScore < 7 ? 'visible' : 'hidden' }}
-                                    onClick={() => setCurrentScore(s => s + 1)}
-                                >
-                                    +
-                                </button>
-                            </div>
-
-                            <button
-                                className="auto-next-btn"
-                                style={{
-                                    backgroundColor: currentPlayer.color,
-                                    border: nextButtonLabel() === 'Nästa hål' ? '3px solid white' : 'none',
-                                    color: getTextColor(currentPlayer.color),
-                                    cursor: 'pointer',
-                                }}
-                                onClick={handleNext}
-                            >
-                                {nextButtonLabel()}
-                            </button>
-                        </div>
-
-                        {!(isLastPlayer && isLastHole) && (
-                            <div className="auto-queue">
-                                <span className="auto-queue-label">Nästa i ordningen</span>
-                                <span className="auto-queue-names">
-                                    {remainingPlayers.length > 0
-                                        ? remainingPlayers.map(p => displayNames.get(p.id)).join(', ')
-                                        : `Hål ${activeHoles[currentHoleIndex + 1]}`}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <div className="auto-links">
-                    <button className="ghost auto-link-btn" onClick={() => setShowSkipModal(true)}>
-                        Hoppa direkt till resultat
-                    </button>
-                    <button className="ghost auto-link-btn" onClick={handleSwitchToScorecard}>
-                        Spela Manuellt istället
-                    </button>
-                </div>
+        {pendingNextHole ? (
+          <div className="auto-card" style={{ backgroundColor: "#2D2D2D" }}>
+            <span className="auto-hole-label">Redo för nästa hål?</span>
+            <span className="auto-player-name">
+              Hål {activeHoles[pendingNextHole.holeIndex]}
+            </span>
+            <div className="auto-score-controls">
+              <button
+                className="auto-next-btn"
+                style={{
+                  backgroundColor:
+                    pendingNextHole.order[pendingNextHole.playerIndex].color,
+                  color: getTextColor(
+                    pendingNextHole.order[pendingNextHole.playerIndex].color,
+                  ),
+                  border: "none",
+                  cursor: "pointer",
+                }}
+                onClick={confirmNextHole}
+              >
+                Nästa hål
+              </button>
+            </div>
+            <div className="auto-queue">
+              <span className="auto-queue-label">Nästa i ordningen</span>
+              <span className="auto-queue-names">
+                {pendingNextHole.order
+                  .slice(pendingNextHole.playerIndex)
+                  .map((p) => displayNames.get(p.id))
+                  .join(", ")}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="auto-card" style={{ backgroundColor: "#2D2D2D" }}>
+            <span className="auto-hole-label">Hål {currentHole}</span>
+            <div className="auto-player-row">
+              <div
+                className="auto-player-avatar"
+                style={{ backgroundColor: currentPlayer.color }}
+              >
+                {(() => {
+                  const av = AVATARS.find(
+                    (a) => a.id === currentPlayer.avatarId,
+                  );
+                  return av ? (
+                    <img src={av.src} className="avatar-img" alt="" />
+                  ) : null;
+                })()}
+              </div>
+              <span className="auto-player-name">
+                {displayNames.get(currentPlayer.id)}s tur
+              </span>
             </div>
 
-            {showConfirm && (
-                <div className="warning-overlay">
-                    <div className="warning-dialog">
-                        <p>Är ni säkra på att ni vill rätta spelet?</p>
-                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color) }} onClick={() => { setShowConfirm(false); submitAndFinish(pendingFinalScores!) }}>Ja, rätta</button>
-                        <button className="auto-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowConfirm(false)}>Avbryt</button>
-                    </div>
-                </div>
-            )}
+            <div className="auto-score-controls">
+              <div className="auto-score-row">
+                <button
+                  className="auto-circle-btn"
+                  style={{
+                    backgroundColor: currentPlayer.color,
+                    color: getTextColor(currentPlayer.color),
+                    visibility: currentScore > 1 ? "visible" : "hidden",
+                  }}
+                  onClick={() => setCurrentScore((s) => s - 1)}
+                >
+                  −
+                </button>
+                <span className="auto-score">{currentScore}</span>
+                <button
+                  className="auto-circle-btn"
+                  style={{
+                    backgroundColor: currentPlayer.color,
+                    color: getTextColor(currentPlayer.color),
+                    visibility: currentScore < 7 ? "visible" : "hidden",
+                  }}
+                  onClick={() => setCurrentScore((s) => s + 1)}
+                >
+                  +
+                </button>
+              </div>
 
-            {showSkipModal && (
-                <div className="warning-overlay">
-                    <div className="warning-dialog">
-                        <p>Alla har inte spelat på varje hål. Om du väljer att rätta nu kommer alla ospelade hål automatiskt få 7 poäng. Om du tog miste på antalet hål kan du välja att plocka bort de hål som är helt ospelade.</p>
-                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color) }} onClick={handleRattaAndå}>Rätta ändå</button>
-                        <button className="auto-modal-btn" style={{ backgroundColor: currentPlayer.color, color: getTextColor(currentPlayer.color) }} onClick={handlePlockaHål}>Plocka bort hål</button>
-                        <button className="auto-modal-btn" style={{ backgroundColor: '#555' }} onClick={() => setShowSkipModal(false)}>Avbryt</button>
-                    </div>
-                </div>
+              <button
+                className="auto-next-btn"
+                style={{
+                  backgroundColor: currentPlayer.color,
+                  border:
+                    nextButtonLabel() === "Nästa hål"
+                      ? "3px solid white"
+                      : "none",
+                  color: getTextColor(currentPlayer.color),
+                  cursor: "pointer",
+                }}
+                onClick={handleNext}
+              >
+                {nextButtonLabel()}
+              </button>
+            </div>
+
+            {!(isLastPlayer && isLastHole) && (
+              <div className="auto-queue">
+                <span className="auto-queue-label">Nästa i ordningen</span>
+                <span className="auto-queue-names">
+                  {remainingPlayers.length > 0
+                    ? remainingPlayers
+                        .map((p) => displayNames.get(p.id))
+                        .join(", ")
+                    : `Hål ${activeHoles[currentHoleIndex + 1]}`}
+                </span>
+              </div>
             )}
-        </>
-    )
+          </div>
+        )}
+
+        <div className="auto-links">
+          <button
+            className="ghost auto-link-btn"
+            onClick={() => setShowSkipModal(true)}
+          >
+            Hoppa direkt till resultat
+          </button>
+          <button
+            className="ghost auto-link-btn"
+            onClick={handleSwitchToScorecard}
+          >
+            Spela Manuellt istället
+          </button>
+        </div>
+      </div>
+
+      {showConfirm && (
+        <div className="warning-overlay">
+          <div className="warning-dialog">
+            <p>Är ni säkra på att ni vill rätta spelet?</p>
+            <button
+              className="auto-modal-btn"
+              style={{
+                backgroundColor: currentPlayer.color,
+                color: getTextColor(currentPlayer.color),
+              }}
+              onClick={() => {
+                setShowConfirm(false);
+                submitAndFinish(pendingFinalScores!);
+              }}
+            >
+              Ja, rätta
+            </button>
+            <button
+              className="auto-modal-btn"
+              style={{ backgroundColor: "#555" }}
+              onClick={() => setShowConfirm(false)}
+            >
+              Avbryt
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showSkipModal && (
+        <div className="warning-overlay">
+          <div className="warning-dialog">
+            <p>
+              Alla har inte spelat på varje hål. Om du väljer att rätta nu
+              kommer alla ospelade hål automatiskt få 7 poäng. Om du tog miste
+              på antalet hål kan du välja att plocka bort de hål som är helt
+              ospelade.
+            </p>
+            <button
+              className="auto-modal-btn"
+              style={{
+                backgroundColor: currentPlayer.color,
+                color: getTextColor(currentPlayer.color),
+              }}
+              onClick={handleRattaAndå}
+            >
+              Rätta ändå
+            </button>
+            <button
+              className="auto-modal-btn"
+              style={{
+                backgroundColor: currentPlayer.color,
+                color: getTextColor(currentPlayer.color),
+              }}
+              onClick={handlePlockaHål}
+            >
+              Plocka bort hål
+            </button>
+            <button
+              className="auto-modal-btn"
+              style={{ backgroundColor: "#555" }}
+              onClick={() => setShowSkipModal(false)}
+            >
+              Avbryt
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showCancelWarning && (
+        <div className="warning-overlay">
+          <div className="warning-dialog">
+            <p>
+              Du håller på med ett spel. Om du lämnar nu kommer ditt
+              pågående spel att gå förlorat.
+            </p>
+            <button
+              className="auto-modal-btn"
+              style={{
+                backgroundColor: currentPlayer.color,
+                color: getTextColor(currentPlayer.color),
+              }}
+              onClick={() => navigate("/new-game")}
+            >
+              Lämna spelet
+            </button>
+            <button
+              className="auto-modal-btn"
+              style={{ backgroundColor: "#555" }}
+              onClick={() => setShowCancelWarning(false)}
+            >
+              Avbryt
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
-export default GameAutoPage
+export default GameAutoPage;
